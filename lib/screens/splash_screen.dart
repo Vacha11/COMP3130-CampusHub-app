@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'signup_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -35,7 +36,7 @@ class SplashScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // second background rectangle
             Positioned(
               top: 400,
@@ -83,6 +84,36 @@ class SplashScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            Positioned(
+              bottom: 60,
+              left: 50,
+              right: 50,
+              child: ElevatedButton(
+                onPressed:(){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignupScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white, // white button
+                  foregroundColor: Color(0xFFD6001C), // red text
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30), // rounded corners
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), // button
+                ),
+                  child: const Text(
+                    'Get Started',
+                    style:TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'WorkSans',
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
               ),
             ),
           ],
