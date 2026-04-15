@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:campushub/widgets/search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +13,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPage() {
   if (bottomIndex == 0) {
-    return const Center(child: Text("Home")); // Display "Home" text when the first tab is selected
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      
+      child: Column(
+        children: const [
+          SizedBox(height: 30), // Spacing at the top of the home screen
+          SearchBarWidget(), // Custom search bar widget for searching content on the home screen
+          SizedBox(height: 20), // Spacing between the search bar and the main content
+          Text("Home Screen Content"), // Placeholder for the main content of the home screen
+        ],
+      ),
+    );
   } else if (bottomIndex == 1) {
     return const Center(child: Text("Favourites")); // Display "Favourites" text when the second tab is selected
   } else {
@@ -33,15 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home), // Home icon for the first tab
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.favorite), // Favorite icon for the second tab
             label: 'Favourite',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person), // Person icon for the third tab
             label: 'Profile',
           ),
         ],
