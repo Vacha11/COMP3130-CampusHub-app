@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/search_bar.dart';
+import 'package:campushub/widgets/category_tabs.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int bottomIndex = 0; // State variable to track the currently selected index of the bottom navigation bar
+  int categoryIndex = 0; // State variable to track the currently selected index of the category tabs
 
   Widget _buildPage() {
   if (bottomIndex == 0) {
@@ -17,11 +19,21 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(16),
       
       child: Column(
-        children: const [
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           SizedBox(height: 30), // Spacing at the top of the home screen
           SearchBarWidget(), // Custom search bar widget for searching content on the home screen
           SizedBox(height: 20), // Spacing between the search bar and the main content
-          Text("Home Screen Content"), // Placeholder for the main content of the home screen
+          CategoryTabSelector(
+            selectedIndex: categoryIndex, 
+            onTabSelected: (index){
+              setState(() {
+                categoryIndex = index; // Update the selected category index when a tab is selected
+              });
+            },
+          ),
+          SizedBox(height:20), // Custom category tab selector widget for filtering content by category
+          Text("Selected Category: $categoryIndex"), // Placeholder for the main content of the home screen
         ],
       ),
     );
