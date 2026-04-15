@@ -87,15 +87,16 @@ class SplashScreen extends StatelessWidget {
               ),
             ),
 
+            // get started button
             Positioned(
               bottom: 60,
               left: 50,
               right: 50,
               child: ElevatedButton(
-                onPressed:(){
+                onPressed:(){ // navigate to signup screen on button press
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignupScreen()),
+                    MaterialPageRoute(builder: (context) => const SignupScreen()), 
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -107,7 +108,7 @@ class SplashScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), // button
                 ),
                   child: const Text(
-                    'Get Started',
+                    'Get Started', // button text
                     style:TextStyle(
                       fontSize: 16,
                       fontFamily: 'WorkSans',
