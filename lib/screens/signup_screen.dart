@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -72,8 +73,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       String password = _passwordController.text.trim(); 
                       var user = await _authService.signUp(email, password); // Attempt to sign up the user with the provided email and password
                       if (user != null) { 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Sign up successful!')), // Show success message if sign-up is successful
+                        Navigator.pushReplacement( // Navigate to the home screen if sign-up is successful
+                          context,
+                          MaterialPageRoute(builder: (context) => const HomeScreen()),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar( 
