@@ -1,3 +1,4 @@
+import 'package:campushub/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/search_bar.dart';
@@ -75,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
   } else if (bottomIndex == 1) {
     return const Center(child: Text("Favourites")); // Display "Favourites" text when the second tab is selected
   } else {
-    return const Center(child: Text("Profile")); // Display "Profile" text when the third tab is selected
+    return ProfileScreen(); // Display "Profile" text when the third tab is selected
   }
 }
 
