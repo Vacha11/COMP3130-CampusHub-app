@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/search_bar.dart';
 import 'package:campushub/widgets/category_tabs.dart';
+import 'package:campushub/widgets/listing_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,8 +33,16 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
           ),
-          SizedBox(height:20), // Custom category tab selector widget for filtering content by category
-          Text("Selected Category: $categoryIndex"), // Placeholder for the main content of the home screen
+          SizedBox(height:10), // Custom category tab selector widget for filtering content by category
+          Expanded(
+            child:ListView(
+              children:const [
+                ListingCard(title: "Laptop", price: "\$500"), // Sample listing card to display an item for sale
+                ListingCard(title: "JBL Headphones", price: "\$50"), // Sample listing card to display another item for sale
+                ListingCard(title: "Python lessons", price: "\$25/hr"), // Sample listing card to display a service for sale
+              ],
+            ),
+          ),
         ],
       ),
     );
