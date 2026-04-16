@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/search_bar.dart';
 import 'package:campushub/widgets/category_tabs.dart';
 import 'package:campushub/widgets/listing_card.dart';
+import 'package:campushub/services/firestore_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int bottomIndex = 0; // State variable to track the currently selected index of the bottom navigation bar
   int categoryIndex = 0; // State variable to track the currently selected index of the category tabs
+  final FirestoreService _firestoreService = FirestoreService(); // Instance of the FirestoreService to interact with Firestore database
 
   Widget _buildPage() {
   if (bottomIndex == 0) {
@@ -35,12 +38,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height:10), // Custom category tab selector widget for filtering content by category
           Expanded(
-            child:ListView(
-              children:const [
-                ListingCard(title: "Laptop", price: "\$500"), // Sample listing card to display an item for sale
-                ListingCard(title: "JBL Headphones", price: "\$50"), // Sample listing card to display another item for sale
-                ListingCard(title: "Python lessons", price: "\$25/hr"), // Sample listing card to display a service for sale
-              ],
+            child:StreamBuilder<QuerySnapshot>(
+              stream:_firestoreService.getListings(), // StreamBuilder to listen to real-time updates from the Firestore database for listings
+              builder: (context, snapshot) {
+
+                if (snapshot.connectionState == ConnectionState.waiting){
+                  return const Center(child: CircularProgressIndicator()); // Display a loading indicator while waiting for data from Firestore
+                }
+
+                if (snapshot.hasError){
+                  return const Center(child: Text("Error loading listings")); // Display an error message if there is an issue loading the listings from Firestore
+                }
+
+                final listings = snapshot.data!.docs; // Get the list of listings from the Firestore snapshot
+
+                if (listings.isEmpty){
+                  return const Center(child: Text("No listings available")); // Display a message if there are no listings available in Firestore
+                }
+
+                return ListView.builder(
+                  itemCount: listings.length, // Set the number of items in the list to the number of listings retrieved from Firestore
+                  itemBuilder: (context, index){
+                    final listing = listings[index].data() as Map<String, dynamic>; // Get the data for each listing and cast it to a Map
+                    return ListingCard(
+                      title: listing['title'] ?? 'No Title', // Display the title of the listing or a default message if the title is not available
+                      price: listing['price'] ?? 'No Price', // Display the price of the listing or a default message if the price is not available
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
