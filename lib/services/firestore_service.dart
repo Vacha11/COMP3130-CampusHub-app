@@ -12,6 +12,8 @@ class FirestoreService {
   }
 
   Stream<QuerySnapshot> getListings() {
-    return _db.collection('listings').snapshots(); // Return a stream of snapshots from the 'listings' collection for real-time updates
+    return _db.collection('listings')
+     .orderBy('createdAt', descending: true)
+     .snapshots();
   }
 }

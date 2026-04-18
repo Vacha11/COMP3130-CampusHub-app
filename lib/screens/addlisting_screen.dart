@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:campushub/services/firestore_service.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
@@ -6,6 +8,7 @@ class AddListingScreen extends StatefulWidget {
   final String? description;
   final String? price;
   final String? category;
+  final String? contact;
 
   const AddListingScreen({
     super.key,
@@ -13,6 +16,7 @@ class AddListingScreen extends StatefulWidget {
     this.description,
     this.price,
     this.category,
+    this.contact,
   });
 
   @override
@@ -69,17 +73,20 @@ class _AddListingScreenState extends State<AddListingScreen> {
  }
 
   // Called when user presses "Post Listing"
-  void _submitListing(){
-    Navigator.pop(
-      context,
-      {
-        "title": titleController.text,
-        "description": descriptionController.text,
-        "price": priceController.text,
-        "category": selectedCategory,
-        "contact": contactController.text,
-      }
-    );
+  void _submitListing() async {
+    final data = {
+      "title": titleController.text,
+      "description": descriptionController.text,
+      "price": priceController.text,
+      "category": selectedCategory == 0 ? "Item" : "Service",
+      "contact": contactController.text,
+      "createdAt": Timestamp.now(),
+    };
+    await FirestoreService().addListing(data);
+
+    if (mounted) {
+      Navigator.pop(context); // go back after saving
+    }
   }
 
   @override
@@ -144,7 +151,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
               ),
               const SizedBox(height: 15),
 
-              // Upload Image
+              // Upload Image Placeholder
               const Text("Add Photo"),
               const SizedBox(height: 7),
               Container(
