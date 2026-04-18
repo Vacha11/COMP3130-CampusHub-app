@@ -5,6 +5,7 @@ import 'package:campushub/widgets/search_bar.dart';
 import 'package:campushub/widgets/category_tabs.dart';
 import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/services/firestore_service.dart';
+import 'addlisting_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -78,34 +79,66 @@ class _HomeScreenState extends State<HomeScreen> {
   } else {
     return ProfileScreen(); // Display "Profile" text when the third tab is selected
   }
+
+
 }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildPage(), // Display the content based on the selected index
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: bottomIndex, // Set the current index of the bottom navigation bar
-        onTap: (index){
-          setState(() {
-            bottomIndex = index; // Update the selected index when a navigation item is tapped
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home), // Home icon for the first tab
-            label: 'Home',
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children:[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:20, vertical:10),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddListingScreen()),
+                  );
+                },
+                icon: const Icon(Icons.add), // Icon for the "Add Listing" button
+                label: const Text("Add Listing", style:TextStyle(color: Colors.white)), // Label for the "Add Listing" button
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFA6192E), // Red color for the
+                  padding: const EdgeInsets.symmetric(vertical: 14), // Button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Rounded corners for the button
+                  ),
+                  elevation: 5, // Elevation for the button to give it a raised appearance
+                ),
+              ),
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite), // Favorite icon for the second tab
-            label: 'Favourite',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person), // Person icon for the third tab
-            label: 'Profile',
+
+          BottomNavigationBar(
+            currentIndex: bottomIndex, // Set the current index of the bottom navigation bar
+            onTap: (index){
+              setState(() {
+                bottomIndex = index; // Update the selected index when a navigation item is tapped
+              });
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home), // Home icon for the first tab
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.favorite), // Favorite icon for the second tab
+                label: 'Favourite',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person), // Person icon for the third tab
+                label: 'Profile',
+              ),
+            ],
           ),
         ],
       ),
-    );
+    ); 
   }
 }

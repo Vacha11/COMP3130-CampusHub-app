@@ -1,6 +1,5 @@
 import 'package:campushub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
 import 'package:campushub/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -15,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
