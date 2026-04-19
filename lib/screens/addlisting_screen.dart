@@ -83,7 +83,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       "category": selectedCategory == 0 ? "Item" : "Service",
       "contact": contactController.text,
       "createdAt": Timestamp.now(),
-      "userId": FirebaseAuth.instance.currentUser?.uid,
+      "userId": user?.uid,
     };
     await FirestoreService().addListing(data);
 

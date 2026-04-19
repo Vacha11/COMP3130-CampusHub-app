@@ -20,7 +20,7 @@ class FirestoreService {
 
   Stream<QuerySnapshot> getUserListings(String userID){ // Read user specific listings
     return _db.collection('listings')
-      .where('userID', isEqualTo: userID)
+      .where('userId', isEqualTo: userID)
       .snapshots();
   }
 }
