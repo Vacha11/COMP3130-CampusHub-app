@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/services/firestore_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
@@ -74,6 +75,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
 
   // Called when user presses "Post Listing"
   void _submitListing() async {
+    final user = FirebaseAuth.instance.currentUser;
     final data = {
       "title": titleController.text,
       "description": descriptionController.text,
@@ -81,6 +83,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       "category": selectedCategory == 0 ? "Item" : "Service",
       "contact": contactController.text,
       "createdAt": Timestamp.now(),
+      "userId": FirebaseAuth.instance.currentUser?.uid,
     };
     await FirestoreService().addListing(data);
 

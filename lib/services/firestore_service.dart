@@ -10,10 +10,17 @@ class FirestoreService {
       print('Error adding listing: $e'); // Print an error message if there is an issue adding the listing
     }
   }
-
-  Stream<QuerySnapshot> getListings() {
+  
+  
+  Stream<QuerySnapshot> getListings() { // Read all listings
     return _db.collection('listings')
      .orderBy('createdAt', descending: true)
      .snapshots();
+  }
+
+  Stream<QuerySnapshot> getUserListings(String userID){ // Read user specific listings
+    return _db.collection('listings')
+      .where('userID', isEqualTo: userID)
+      .snapshots();
   }
 }
