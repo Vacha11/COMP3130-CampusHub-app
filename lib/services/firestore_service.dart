@@ -10,6 +10,10 @@ class FirestoreService {
       print('Error adding listing: $e'); // Print an error message if there is an issue adding the listing
     }
   }
+
+  Future<void> updateListing(String docId, Map<String, dynamic> data) async {
+    await _db.collection('listings').doc(docId).update(data);
+  }
   
   
   Stream<QuerySnapshot> getListings() { // Read all listings

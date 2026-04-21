@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
+  final String? docId;
   final String? title;
   final String? description;
   final String? price;
@@ -13,6 +14,7 @@ class AddListingScreen extends StatefulWidget {
 
   const AddListingScreen({
     super.key,
+    this.docId,
     this.title,
     this.description,
     this.price,
@@ -85,8 +87,13 @@ class _AddListingScreenState extends State<AddListingScreen> {
       "createdAt": Timestamp.now(),
       "userId": user?.uid,
     };
-    await FirestoreService().addListing(data);
-
+    if (widget.docId != null){
+      // update
+      await FirestoreService().updateListing(widget.docId!, data);
+    } else {
+      await FirestoreService().addListing(data);
+    }
+    
     if (mounted) {
       Navigator.pop(context); // go back after saving
     }

@@ -1,3 +1,4 @@
+import 'package:campushub/screens/addlisting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "\${data['price'] ?? ''}",
+                  "${data['price'] ?? ''}",
                   style: const TextStyle(color:Colors.red),
                 ),
               ],
@@ -67,13 +68,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  // to do - allow user to make changes to their listing
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddListingScreen(
+                        docId: docId,
+                        title: data['title'],
+                        price: data['price'],
+                        description: data['description'],
+                        category: data['category'],
+                        contact: data['contact'],
+                      ),
+                    ),
+                  );
                 }
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed:() {
-                  // to do - allow user to delete their listing
+                  // to do 
                 }
               ),
             ],
