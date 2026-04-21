@@ -15,6 +15,73 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
   
+  Widget _buildProfileListingCard(String docId, Map<String, dynamic>data){
+    return Container(
+      margin: const EdgeInsets.only(bottom:12),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: Row(
+        children:[
+          //Image placeholder
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.image),
+          ),
+          const SizedBox(width:12),
+
+          // title + price
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data['title'] ?? '',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "\${data['price'] ?? ''}",
+                  style: const TextStyle(color:Colors.red),
+                ),
+              ],
+            ),
+          ),
+
+          // Actions - Edit and update to add later
+          Column(
+            children:[
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  // to do - allow user to make changes to their listing
+                }
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed:() {
+                  // to do - allow user to delete their listing
+                }
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -55,14 +122,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   final listings = snapshot.data!.docs;
 
                   return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                     itemCount: listings.length,
                     itemBuilder: (context, index){
                       final data = listings[index].data() as Map<String, dynamic>;
 
-                      return ListTile(
-                        title: Text(data['title'] ?? 'No Title'),
-                        subtitle: Text(data['price'] ?? 'No Price'),
-                      );
+                      return _buildProfileListingCard(listings[index].id, data);
                     },
                   );
                 },
