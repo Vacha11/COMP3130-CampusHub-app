@@ -14,6 +14,10 @@ class FirestoreService {
   Future<void> updateListing(String docId, Map<String, dynamic> data) async {
     await _db.collection('listings').doc(docId).update(data);
   }
+
+  Future<void> deleteListing(String docId) async{
+    await _db.collection('listings').doc(docId).delete();
+  }
   
   
   Stream<QuerySnapshot> getListings() { // Read all listings

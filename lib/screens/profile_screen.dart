@@ -85,8 +85,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed:() {
-                  // to do 
+                onPressed:() async {
+                  await FirestoreService().deleteListing(docId);
                 }
               ),
             ],
