@@ -1,3 +1,4 @@
+import 'package:campushub/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'home_screen.dart';
@@ -98,6 +99,34 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                   ),
+                ),
+                const SizedBox(height: 10),
+
+                Column(
+                  children: [
+                    Center(
+                      child: const Text(
+                        "Already have an account?",
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:(context) => const LoginScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Log In",
+                        style: TextStyle(
+                          color: Color(0xFFA6192E),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
