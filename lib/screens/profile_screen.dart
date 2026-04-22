@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
 
-          // Actions - Edit and update to add later
+          // Actions - Edit and update 
           Column(
             children:[
               IconButton(
@@ -86,7 +86,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               IconButton(
                 icon: const Icon(Icons.delete),
                 onPressed:() async {
-                  await FirestoreService().deleteListing(docId);
+                  final confirm = await showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text(
+                        "Delete Listing"
+                      ),
+                      content: const Text(
+                        "Are you sure?"
+                      ),
+                      actions:[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Delete"),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    await FirestoreService().deleteListing(docId);
+                  }
                 }
               ),
             ],
