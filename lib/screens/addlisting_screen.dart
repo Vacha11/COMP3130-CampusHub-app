@@ -44,6 +44,22 @@ class _AddListingScreenState extends State<AddListingScreen> {
    super.dispose();
  }
 
+ @override
+ void initState(){
+  super.initState();
+
+  // prefill data
+  titleController.text = widget.title ?? '';
+  descriptionController.text = widget.description ?? '';
+  priceController.text = widget.price ?? '';
+  contactController.text = widget.contact ?? '';
+
+  // set category when editing
+  if (widget.category != null){
+    selectedCategory = widget.category == "Service" ? 1:0;
+  }
+ }
+
   // Builds category selection buttons (Item / Service)
   Widget _buildCategoryButton(String title, int index) { 
    final isSelected = selectedCategory == index;
@@ -212,7 +228,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(
-                    "Post Listing",
+                    widget.docId != null ? "Update Listing" : "Post Listing",
                     style: const TextStyle(fontSize: 16),
                   ),
                 ),
