@@ -13,6 +13,7 @@ class AddListingScreen extends StatefulWidget {
   final String? price;
   final String? category;
   final String? contact;
+  final String? imageUrl;
 
   const AddListingScreen({
     super.key,
@@ -22,6 +23,7 @@ class AddListingScreen extends StatefulWidget {
     this.price,
     this.category,
     this.contact,
+    this.imageUrl,
   });
 
   @override
@@ -98,6 +100,14 @@ class _AddListingScreenState extends State<AddListingScreen> {
   // Called when user presses "Post Listing"
   void _submitListing() async {
     final user = FirebaseAuth.instance.currentUser;
+    String? uploadedUrl;
+
+    if (selectedImage != null) {
+      uploadedUrl = await FirestoreService().uploadImage(selectedImage!);
+    }
+
+    String? imageUrl = uploadedUrl ?? widget.imageUrl;
+
     final data = {
       "title": titleController.text,
       "description": descriptionController.text,
@@ -106,6 +116,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       "contact": contactController.text,
       "createdAt": Timestamp.now(),
       "userId": user?.uid,
+      "imageUrl": imageUrl,
     };
     if (widget.docId != null){
       // update
@@ -217,31 +228,26 @@ class _AddListingScreenState extends State<AddListingScreen> {
                   ),
                 ],
               ),
-              // GestureDetector(
-              //   onTap: (){
-              //     selectImage(ImageSource.gallery); // open gallery to select image,
-              //   },
-              //   child: Container(
-              //     height: 150,
-              //     width: double.infinity,
-              //     decoration: BoxDecoration(
-              //       color: Colors.grey[200],
-              //       borderRadius: BorderRadius.circular(10),
-              //     ),
-              //     child: selectedImage != null
-              //     ? ClipRRect(
-              //       borderRadius: BorderRadius.circular(10),
-              //       child: Image.file(
-              //         selectedImage!, 
-              //         fit: BoxFit.cover,
-              //         width: double.infinity,
-              //       ),
-              //     )
-              //     : const Center(
-              //       child: Icon(Icons.add_a_photo, size: 30),
-              //     ),
-              //   ),
-              // ),
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: selectedImage != null
+                  ? ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.file(
+                      selectedImage!, 
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  )
+                  : const Center(
+                    child: Icon(Icons.add_a_photo, size: 30),
+                  ),
+                ),
             
               const SizedBox(height: 15),
               

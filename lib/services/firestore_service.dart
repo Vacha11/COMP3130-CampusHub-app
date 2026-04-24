@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -17,6 +19,24 @@ class FirestoreService {
 
   Future<void> deleteListing(String docId) async{
     await _db.collection('listings').doc(docId).delete();
+  }
+
+  Future<String?> uploadImage(File image) async {
+    try{
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString(); // Generate a unique filename based on the current timestamp
+
+      final ref = FirebaseStorage.instance
+        .ref()
+        .child('listing_images')
+        .child('$fileName.jpg'); // Create a reference to the location in Firebase Storage where the image will be stored
+
+        await ref.putFile(image);
+
+        return await ref.getDownloadURL();
+    } catch (e){
+      print('Error uploading image: $e');
+      return null;
+    }
   }
   
   

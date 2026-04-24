@@ -17,6 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
   
   Widget _buildProfileListingCard(String docId, Map<String, dynamic>data){
+    final imageUrl = data['imageUrl'] ?? '';
     return Container(
       margin: const EdgeInsets.only(bottom:12),
       padding: const EdgeInsets.all(10),
@@ -33,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Row(
         children:[
           //Image placeholder
+          
           Container(
             height: 60,
             width: 60,
@@ -40,7 +42,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.image),
+            child: imageUrl != null && imageUrl != ''
+              ? ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
+              )
+            : const Icon(Icons.image),
           ),
           const SizedBox(width:12),
 
@@ -78,6 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         description: data['description'],
                         category: data['category'],
                         contact: data['contact'],
+                        imageUrl: data['imageUrl'],
                       ),
                     ),
                   );
