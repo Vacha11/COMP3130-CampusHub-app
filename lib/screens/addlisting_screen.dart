@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
@@ -31,6 +33,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
+  File? selectedImage;
+  final ImagePicker picker = ImagePicker();
 
   // Tracks selected category (0 = Item, 1 = Service)
   int selectedCategory = 0;
@@ -112,6 +116,16 @@ class _AddListingScreenState extends State<AddListingScreen> {
     
     if (mounted) {
       Navigator.pop(context); // go back after saving
+    }
+  }
+
+  Future<void> selectImage(ImageSource source) async{
+    final selectedFile = await picker.pickImage(source: source);
+
+    if(selectedFile != null){
+      setState(() {
+        selectedImage = File(selectedFile.path);
+      });
     }
   }
 
