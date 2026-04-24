@@ -191,20 +191,58 @@ class _AddListingScreenState extends State<AddListingScreen> {
               ),
               const SizedBox(height: 15),
 
-              // Upload Image Placeholder
+              // Upload Image 
               const Text("Add Photo"),
               const SizedBox(height: 7),
-              Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Icon(Icons.add_a_photo, size: 30),
-                ),
+              Column(
+                children: [
+                  Row(
+                    children:[
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => selectImage(ImageSource.gallery), // open gallery to select image
+                          icon: const Icon(Icons.photo_library),
+                          label: const Text("Gallery"),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => selectImage(ImageSource.camera), // open camera to take photo
+                          icon: const Icon(Icons.camera_alt),
+                          label: const Text("Camera"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+              // GestureDetector(
+              //   onTap: (){
+              //     selectImage(ImageSource.gallery); // open gallery to select image,
+              //   },
+              //   child: Container(
+              //     height: 150,
+              //     width: double.infinity,
+              //     decoration: BoxDecoration(
+              //       color: Colors.grey[200],
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //     child: selectedImage != null
+              //     ? ClipRRect(
+              //       borderRadius: BorderRadius.circular(10),
+              //       child: Image.file(
+              //         selectedImage!, 
+              //         fit: BoxFit.cover,
+              //         width: double.infinity,
+              //       ),
+              //     )
+              //     : const Center(
+              //       child: Icon(Icons.add_a_photo, size: 30),
+              //     ),
+              //   ),
+              // ),
+            
               const SizedBox(height: 15),
               
               // Contact Input
