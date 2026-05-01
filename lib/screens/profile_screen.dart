@@ -7,6 +7,7 @@ import 'package:campushub/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -20,13 +21,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
   File? _profileImage; // Variable to hold the selected image file
   final ImagePicker _picker = ImagePicker(); // Image picker instance to handle image selection
 
+  // Function to pick an image from the gallery or take a photo using the camera
   Future<void> _pickProfileImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source); // Open the image picker to select an image from the gallery or take photo using the camera
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path); // Update the state with the selected image file
-      });
-    }
+    if (pickedFile == null) return; // If no image is selected, return early
+    final file = File (pickedFile.path); // Create a File object from the selected image path
+    final user = FirebaseAuth.instance.currentUser; 
+    if(user == null) return;
+    final storageref = FirebaseStorage.instance
+      .ref()
+      .child('profile_images')
+      .child('${user.uid}.jpg');
+    print("START UPLOAD");
+    await storageref.putFile(file); // Upload the selected image file to Firebase Storage
+    print("UPLOAD DONE");
+    final imageUrl = await storageref.getDownloadURL(); // Get the download URL of
+
+    print("UPLOAD COMPLETE: $imageUrl");
+
+    // save to Firestore
+    await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .set({
+        'profileImage':imageUrl,
+      }, SetOptions(merge: true)); // Save the download URL of the uploaded image to Firestore under the user's document, merging with existing data if necessary
+    setState(() {
+      _profileImage = file; // Update the state with the selected image file to display it in the UI
+    });
   }
 
   void _showImagePickerOptions() {
@@ -57,6 +79,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     ); // Show a bottom sheet with options to choose between gallery and camera for image selection
+  }
+
+  String? _profileImageUrl; // Variable to hold the URL of the profile image
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage(); // Load the profile image when the widget is initialized
+  }
+
+  Future<void> _loadProfileImage() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if(user == null) return;
+    final doc = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .get(); // Fetch the user's document from Firestore to retrieve the profile image URL
+    if(doc.exists){
+      setState(() {
+        _profileImageUrl = doc['profileImage']; // Update the state with the retrieved profile
+      });
+    }
   }
 
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
@@ -232,8 +275,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       CircleAvatar(
                         radius:55,
                         backgroundColor: Colors.grey[300],
-                        backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                        child: _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
+                        backgroundImage: _profileImage != null ? NetworkImage(_profileImageUrl!) : (_profileImageUrl != null ? FileImage(_profileImage!) : null) as ImageProvider?, // Display the selected profile image if available, otherwise display the image from the URL if available
+                        child: _profileImage == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
                       ),
                       Positioned(
                         bottom: 0,
