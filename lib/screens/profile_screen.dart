@@ -137,6 +137,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      //logout in top right corner
+      appBar: AppBar(
+        title: const Text("Profile"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              final confirmLogout = await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Logout"),
+                  content: const Text("Are you sure you want to logout?"),
+                  actions:[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text("Logout"),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmLogout == true) {
+                await _authService.signOut(); // Call the signOut method from AuthService to log the user out
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()), // Navigate to the Login
+                  // Screen after logging out
+                );
+              }
+            },
+          ),
+        ],
+      ),
       body: Column(
         
           children: [
@@ -181,17 +217,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   );
                 },
               ),
-            ),
-
-            ElevatedButton(
-              onPressed: () async {
-                await _authService.signOut(); // Call the signOut method from AuthService to log the user out
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()), // Navigate to the LoginScreen after logging out
-                );
-              },
-              child: const Text("Logout"), // Text for the logout button
             ),
           ],
         ),  
