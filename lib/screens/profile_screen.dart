@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,6 +17,48 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  File? _profileImage; // Variable to hold the selected image file
+  final ImagePicker _picker = ImagePicker(); // Image picker instance to handle image selection
+
+  Future<void> _pickProfileImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source); // Open the image picker to select an image from the gallery or take photo using the camera
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path); // Update the state with the selected image file
+      });
+    }
+  }
+
+  void _showImagePickerOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                  _pickProfileImage(ImageSource.gallery); // Open the image picker for gallery selection
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () {
+                  Navigator.pop(context); // Close the bottom sheet
+                  _pickProfileImage(ImageSource.camera); // Open the image picker for camera capture
+                },
+              ),
+            ],
+          ),
+        );
+      }
+    ); // Show a bottom sheet with options to choose between gallery and camera for image selection
+  }
+
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
   
   Widget _buildProfileListingCard(String docId, Map<String, dynamic>data){
@@ -139,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       //logout in top right corner
       appBar: AppBar(
-        title: const Text("Profile"),
+        automaticallyImplyLeading: false, // Remove the default back button from the AppBar
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -173,53 +218,84 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-      body: Column(
-        
-          children: [
-            Text(
-              user?.email?.split('@')[0] ?? 'User', // Display the username (part of the email before '@') or 'User' if email is not available
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Styling for the username text
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Column(        
+              children: [
+                // Profile image
+                GestureDetector(
+                  onTap: _showImagePickerOptions, 
+                  child: Stack(
+                    children:[
+                      CircleAvatar(
+                        radius:55,
+                        backgroundColor: Colors.grey[300],
+                        backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                        child: _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  user?.email?.split('@')[0] ?? 'User', // Display the username (part of the email before '@') or 'User' if email is not available
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Styling for the username text
+                ),
             
-            const SizedBox(height: 10), // Spacing between the username and email
+                const SizedBox(height: 10), // Spacing between the username and email
 
-            Text(
-              user?.email ?? 'No email', // Display the user's email or 'No email' if email is not available
-              style: TextStyle(fontSize: 16, color: Colors.grey), // Styling for the email text
-            ),
+                Text(
+                  user?.email ?? 'No email', // Display the user's email or 'No email' if email is not available
+                  style: TextStyle(fontSize: 16, color: Colors.grey), // Styling for the email text
+                ),
 
-            const SizedBox(height: 30), // Spacing between the email and the listings 
+                const SizedBox(height: 30), // Spacing between the email and the listings 
             
-            const Divider(),
-            const Text ("My Listings", style:TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Divider(),
+                const Divider(),
+                const Text ("My Listings", style:TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Divider(),
 
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirestoreService().getUserListings(user!.uid),
-                builder:(context, snapshot){
-                  if (snapshot.connectionState == ConnectionState.waiting){
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
-                    return const Center(child: Text("No Listings yet"));
-                  }
-                  final listings = snapshot.data!.docs;
+              
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirestoreService().getUserListings(user!.uid),
+                  builder:(context, snapshot){
+                    if (snapshot.connectionState == ConnectionState.waiting){
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
+                      return const Center(child: Text("No Listings yet"));
+                    }
+                    final listings = snapshot.data!.docs;
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                    itemCount: listings.length,
-                    itemBuilder: (context, index){
-                      final data = listings[index].data() as Map<String, dynamic>;
-
-                      return _buildProfileListingCard(listings[index].id, data);
-                    },
-                  );
-                },
-              ),
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: listings.length,
+                      itemBuilder: (context, index){
+                        final data = listings[index].data() as Map<String, dynamic>;
+                        return _buildProfileListingCard(listings[index].id, data);
+                      },
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
-        ),  
-      );
+          ),
+        ),
+      ),  
+    );
   }
 }
