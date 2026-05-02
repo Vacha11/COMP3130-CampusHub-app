@@ -7,7 +7,8 @@ import 'package:campushub/services/firestore_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:campushub/services/user_profile_service.dart';
+
 
 
 class ProfileScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   File? _profileImage; // Variable to hold the selected image file
   final ImagePicker _picker = ImagePicker(); // Image picker instance to handle image selection
+  final UserProfileService _profileService = UserProfileService();
 
   // Function to pick an image from the gallery or take a photo using the camera
   Future<void> _pickProfileImage(ImageSource source) async {
@@ -28,26 +30,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final file = File (pickedFile.path); // Create a File object from the selected image path
     final user = FirebaseAuth.instance.currentUser; 
     if(user == null) return;
-    final storageref = FirebaseStorage.instance
-      .ref()
-      .child('profile_images')
-      .child('${user.uid}.jpg');
-    print("START UPLOAD");
-    await storageref.putFile(file); // Upload the selected image file to Firebase Storage
-    print("UPLOAD DONE");
-    final imageUrl = await storageref.getDownloadURL(); // Get the download URL of
+    final url = await _profileService.uploadProfilePicture(file, user.uid); 
+    
+    await _profileService.saveProfileImageUrl(user.uid, url); // Upload the selected image to Firebase Storage and save the download URL to Firestore under the user's document
 
-    print("UPLOAD COMPLETE: $imageUrl");
+    final imageUrl = await _profileService.getProfileImageUrl(user.uid); // Get the download URL of the uploaded image
 
-    // save to Firestore
-    await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .set({
-        'profileImage':imageUrl,
-      }, SetOptions(merge: true)); // Save the download URL of the uploaded image to Firestore under the user's document, merging with existing data if necessary
     setState(() {
       _profileImage = file; // Update the state with the selected image file to display it in the UI
+      _profileImageUrl = imageUrl; // Update the state with the retrieved image URL to display it in the UI
     });
   }
 
@@ -91,15 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfileImage() async {
     final user = FirebaseAuth.instance.currentUser;
     if(user == null) return;
-    final doc = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .get(); // Fetch the user's document from Firestore to retrieve the profile image URL
-    if(doc.exists){
-      setState(() {
-        _profileImageUrl = doc['profileImage']; // Update the state with the retrieved profile
-      });
-    }
+    final url = await _profileService.getProfileImageUrl(user.uid); // Get the profile image URL from Firestore for the current user
+    setState(() {
+      _profileImageUrl = url; // Update the state with the retrieved profile image URL to display it in the UI
+    });
   }
 
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
@@ -225,6 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      
       //logout in top right corner
       appBar: AppBar(
         automaticallyImplyLeading: false, // Remove the default back button from the AppBar
@@ -276,7 +263,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         radius:55,
                         backgroundColor: Colors.grey[300],
                         backgroundImage: _profileImage != null ? NetworkImage(_profileImageUrl!) : (_profileImageUrl != null ? FileImage(_profileImage!) : null) as ImageProvider?, // Display the selected profile image if available, otherwise display the image from the URL if available
-                        child: _profileImage == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
+                        child: _profileImageUrl == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
                       ),
                       Positioned(
                         bottom: 0,
