@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   if (bottomIndex == 0) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -52,8 +52,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: Text("Error loading listings")); // Display an error message if there is an issue loading the listings from Firestore
                 }
 
-                final listings = snapshot.data!.docs; // Get the list of listings from the Firestore snapshot
+                final allListings = snapshot.data!.docs; // Get the list of listings from the Firestore snapshot
 
+                final listings = allListings.where((doc){
+                  final data = doc.data() as Map<String, dynamic>;
+                  
+                  final category = (data['category'] ?? '').toString().toLowerCase();
+
+
+                  if (categoryIndex == 0) return true; // Show all listings if the "All" category is selected
+                  if (categoryIndex == 1) return category == 'item'; // Show only item listings if the "Items" category is selected
+                  if (categoryIndex == 2) return category == 'service'; // Show only service listings if the "Services" category is selected
+                  
+                  return true; // Default case to show all listings
+
+                }).toList(); // Filter the listings based on the selected category index
                 if (listings.isEmpty){
                   return const Center(child: Text("No listings available")); // Display a message if there are no listings available in Firestore
                 }
