@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:campushub/services/favourite_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class ListingDetailScreen extends StatelessWidget {
+class ListingDetailScreen extends StatefulWidget {
   final Map<String, dynamic> listing;
   final String docId;
 
@@ -11,17 +13,41 @@ class ListingDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<ListingDetailScreen> createState() => _ListingDetailScreenState();
+}
+
+class _ListingDetailScreenState extends State<ListingDetailScreen> {
+  final FavouriteService favouriteService = FavouriteService(); // Instance of the service to manage favourites
+  bool isFav = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavourite(); // Load the favourite status when the screen initializes
+  }
+
+  void _loadFavourite() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return; 
+    final favs = await favouriteService.getFavourites(user.uid); // Get the list of favourite listing IDs for the current user
+    if (!mounted) return;
+    setState(() {
+      isFav = favs.contains(widget.docId); // Check if the current listing is in
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final title = listing['title'] ?? 'No Title';
-    final price = listing['price'] ?? '0';
-    final description = listing['description'] ?? 'No description provided';
-    final contact = listing['contact'] ?? 'No contact';
-    final category = listing['category'] ?? 'Unknown';
-    final imageUrl = listing['imageUrl'];
-    final sellerName = listing['sellerName'] ?? 'Anonymous';
+    final title = widget.listing['title'] ?? 'No Title';
+    final price = widget.listing['price'] ?? '0';
+    final description = widget.listing['description'] ?? 'No description provided';
+    final contact = widget.listing['contact'] ?? 'No contact';
+    final category = widget.listing['category'] ?? 'Unknown';
+    final imageUrl = widget.listing['imageUrl'];
+    final sellerName = widget.listing['sellerName'] ?? 'Anonymous';
 
     final isService =
-        (listing['category'] ?? '').toString().toLowerCase() == 'service';
+        (widget.listing['category'] ?? '').toString().toLowerCase() == 'service';
 
     final formattedPrice = "\$$price${isService ? '/hr' : ''}";
 
@@ -37,13 +63,19 @@ class ListingDetailScreen extends StatelessWidget {
             pinned: true,
             backgroundColor: const Color(0xFFA6192E),
 
-            /// ONLY HEART (NO SHARE)
+            // heart icon to add to favourites
             actions: [
               IconButton(
-                onPressed: () {
-                  // TODO: toggle favourite
+                onPressed: () async {
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user == null) return;
+                  await favouriteService.toggleFavourites(user.uid, widget.docId);
+                  if (!mounted) return;
+                  setState(() {
+                    isFav = !isFav; // Toggle the favourite status locally for immediate UI feedback
+                  });
                 },
-                icon: const Icon(Icons.favorite_border),
+                icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.white,),
               ),
             ],
 
@@ -53,7 +85,7 @@ class ListingDetailScreen extends StatelessWidget {
                 children: [
 
                   Hero(
-                    tag: docId,
+                    tag: widget.docId,
                     child: imageUrl != null
                         ? Image.network(imageUrl, fit: BoxFit.cover)
                         : Container(color: Colors.grey[300]),
@@ -195,6 +227,7 @@ class ListingDetailScreen extends StatelessWidget {
       ),
     );
   }
+
    // helper for details sections (description, seller, contact)
   Widget _sectionCard({
     required String title,

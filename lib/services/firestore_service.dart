@@ -42,6 +42,17 @@ class FirestoreService {
       return null;
     }
   }
+
+  // Get a list of DocumentSnapshots for the listings that are in the user's favourites based on their IDs
+  Future<List<DocumentSnapshot>> getFavouriteListings(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    
+    final querySnapshot = await _db.collection('listings')
+      .where(FieldPath.documentId, whereIn: ids)
+      .get();
+
+    return querySnapshot.docs;
+  }
   
   // Read all listings
   Stream<QuerySnapshot> getListings() { // Read all listings

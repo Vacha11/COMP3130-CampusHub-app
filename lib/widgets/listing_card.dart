@@ -42,7 +42,7 @@ class ListingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // IMAGE
+            //image
             Hero(
               tag: docId ?? title,
               child: Container(
@@ -68,7 +68,7 @@ class ListingCard extends StatelessWidget {
 
             const SizedBox(height: 10),
 
-            // TITLE
+            //tile
             Text(
               title,
               style: const TextStyle(
@@ -79,7 +79,7 @@ class ListingCard extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            // PRICE + HEART
+            //price and favourite button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
