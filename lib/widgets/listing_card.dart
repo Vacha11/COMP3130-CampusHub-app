@@ -43,24 +43,27 @@ class ListingCard extends StatelessWidget {
           children: [
 
             // IMAGE
-            Container(
-              height: 140,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
+            Hero(
+              tag: docId ?? title,
+              child: Container(
+                height: 140,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: imageUrl != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          imageUrl!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 140,
+                        ),
+                      )
+                    : const Icon(Icons.image, size: 50),
               ),
-              child: imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        imageUrl!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: 140,
-                      ),
-                    )
-                  : const Icon(Icons.image, size: 50),
             ),
 
             const SizedBox(height: 10),

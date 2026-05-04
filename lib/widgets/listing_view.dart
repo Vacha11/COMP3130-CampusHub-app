@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'package:campushub/widgets/listing_card.dart';
+import 'package:campushub/screens/listing_detail_screen.dart';
 
 class ListingsView extends StatelessWidget {
   final int categoryIndex;
@@ -73,7 +74,15 @@ class ListingsView extends StatelessWidget {
                 // favourites later
               },
               onTap: () {
-                // detail page later
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ListingDetailScreen(
+                      listing: listing,
+                      docId: listings[index].id,
+                    ), 
+                  ),
+                );
               },
             );
           },
