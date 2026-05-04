@@ -109,9 +109,12 @@ class _SignupScreenState extends State<SignupScreen> {
                       width: double.infinity,
                       child: ElevatedButton( // Sign-up button
                         onPressed:() async {
+                          String firstName = _firstNameController.text.trim();
+                          String lastName = _lastNameController.text.trim();
+                          String name = "$firstName $lastName".trim(); // Combine first and last name
                           String email = _emailController.text.trim(); 
                           String password = _passwordController.text.trim(); 
-                          var user = await _authService.signUp(email, password); // Attempt to sign up the user with the provided email and password
+                          var user = await _authService.signUp(email, password, name); // Attempt to sign up the user with the provided email and password
                           if (user != null) { 
                             Navigator.pushReplacement( // Navigate to the home screen if sign-up is successful
                               context,

@@ -116,6 +116,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
       "contact": contactController.text,
       "createdAt": Timestamp.now(),
       "userId": user?.uid,
+      "sellerName": user?.displayName ?? user?.email ?? "Anonymous",
+      "sellerEmail": user?.email,
       "imageUrl": imageUrl,
     };
     if (widget.docId != null){
