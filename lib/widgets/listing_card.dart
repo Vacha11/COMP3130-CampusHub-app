@@ -5,6 +5,7 @@ import 'package:campushub/providers/favourite_provider.dart';
 class ListingCard extends StatelessWidget {
   final String title;
   final String price;
+  final String? category;
   final String? imageUrl;
   final String? docId;
   final VoidCallback? onTap;
@@ -13,6 +14,7 @@ class ListingCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.price,
+    required this.category,
     this.imageUrl,
     this.docId,
     this.onTap,
@@ -20,6 +22,9 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isService = (category ?? '').toLowerCase() == 'service';
+    final formattedPrice = "\$$price${isService ? '/hr' : ''}";
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -28,6 +33,7 @@ class ListingCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEDEBE5),width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -60,7 +66,7 @@ class ListingCard extends StatelessWidget {
                           height: 140,
                         ),
                       )
-                    : const Icon(Icons.image, size: 50),
+                    : const Icon(Icons.image, size: 50, color: Color(0xFF373A36)),
               ),
             ),
 
@@ -70,22 +76,23 @@ class ListingCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color:  Color(0xFF373A36),
               ),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 2),
 
             //price and favourite button
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  price,
+                  formattedPrice,
                   style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.green,
+                    fontSize: 16,
+                    color: Color(0xFFA6192E),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -102,7 +109,8 @@ class ListingCard extends StatelessWidget {
                       },
                       icon: Icon(
                         isFav ? Icons.favorite : Icons.favorite_border,
-                        color: isFav ? Colors.red : Colors.grey,
+                        color: isFav ? const Color(0xFFD6001C) : const Color(0xFFA6192E).withOpacity(0.6),
+                        size: 30,
                       ),
                     );
                   }

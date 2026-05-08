@@ -31,39 +31,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildPage() {
   if (bottomIndex == 0) {
-    return Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
 
         const SizedBox(height: 40), // Spacing at the top of the home screen
 
-        SearchBarWidget(
-          onChanged: (value){
-            setState(() {
-              searchQuery = value; // Update the search query state variable when the search input changes
-            });
-          },
-        ),
+        Material(
+          elevation: 6,
+          borderRadius: BorderRadius.circular(16),
+          color: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SearchBarWidget(
+                  onChanged: (value){
+                    setState(() {
+                      searchQuery = value; // Update the search query state variable when the search input changes
+                    });
+                  },
+                ),
+                const SizedBox(height: 20), // Spacing between the search bar and category tabs
 
-        const SizedBox(height: 20), // Spacing between the search bar and category tabs
-
-        CategoryTabSelector(
-          selectedIndex: categoryIndex,
-          onTabSelected: (index) {
-            setState(() {
-              categoryIndex = index;
-            });
-          },
+                CategoryTabSelector(
+                  selectedIndex: categoryIndex,
+                  onTabSelected: (index) {
+                    setState(() {
+                      categoryIndex = index;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
+        const SizedBox(height: 10),
 
         Expanded(
-          child: ListingsView(categoryIndex: categoryIndex,searchQuery: searchQuery,),
+          child: ListingsView(categoryIndex: categoryIndex,searchQuery: searchQuery),
         ),
       ],
-    ),
-  );
+    );
   } else if (bottomIndex == 1) {
     return const FavouritesScreen(); // Display "Favourites" text when the second tab is selected
   } else {
@@ -76,59 +86,64 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F7F7),
       body: _buildPage(), // Display the content based on the selected index
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children:[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal:20, vertical:10),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const AddListingScreen()),
-                  );
-                },
-                icon: const Icon(Icons.add), // Icon for the "Add Listing" button
-                label: const Text("Add Listing", style:TextStyle(color: Colors.white)), // Label for the "Add Listing" button
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFA6192E), // Red color for the
-                  padding: const EdgeInsets.symmetric(vertical: 14), // Button padding
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10), // Rounded corners for the button
-                  ),
-                  elevation: 5, // Elevation for the button to give it a raised appearance
-                ),
-              ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
             ),
-          ),
-
-          BottomNavigationBar(
-            currentIndex: bottomIndex, // Set the current index of the bottom navigation bar
-            onTap: (index){
-              setState(() {
-                bottomIndex = index; // Update the selected index when a navigation item is tapped
-              });
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home), // Home icon for the first tab
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.favorite), // Favorite icon for the second tab
-                label: 'Favourite',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person), // Person icon for the third tab
-                label: 'Profile',
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: bottomIndex, // Set the current index of the bottom navigation bar
+          onTap: (index){
+            setState(() {
+              bottomIndex = index; // Update the selected index when a navigation item is tapped
+            });
+          },
+          selectedItemColor: const Color(0xFFA6192E),
+          unselectedItemColor: const Color(0xFF373A36).withOpacity(0.6),
+          backgroundColor: Colors.white,
+          elevation:0,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home), // Home icon for the first tab
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.favorite), // Favorite icon for the second tab
+              label: 'Favourite',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person), // Person icon for the third tab
+              label: 'Profile',
+            ),
+          ],
+        ),
       ),
+      floatingActionButton: SizedBox(
+        width: 150,
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AddListingScreen()),
+            );
+          },
+          backgroundColor: const Color(0xFFA6192E),
+          icon: const Icon(Icons.add, color: Colors.white),
+          label: const Text(
+            "Add Listing",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     ); 
   }
 }

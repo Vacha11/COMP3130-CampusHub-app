@@ -69,6 +69,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                     return ListingCard(
                       title: listing['title'] ?? 'No Title',
                       price: listing['price'] ?? '0',
+                      category: listing['category'] ?? '',
                       imageUrl: listing['imageUrl'],
                       docId: listings[index].id,
                       onTap: () {

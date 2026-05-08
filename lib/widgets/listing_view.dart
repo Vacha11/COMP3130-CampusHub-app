@@ -76,6 +76,7 @@ class _ListingsViewState extends State<ListingsView> {
             return ListingCard(
               title: listing['title'] ?? 'No Title',
               price: listing['price'] ?? 'No Price',
+              category: listing['category'] ?? '',
               imageUrl: listing['imageUrl'],
               docId: docId,
               onTap: () {
