@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
+import 'providers/favourite_provider.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => FavouriteProvider(), // Provide the FavouriteProvider to the widget tree
+      child:const MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {

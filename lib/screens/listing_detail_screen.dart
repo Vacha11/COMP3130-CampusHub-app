@@ -1,6 +1,6 @@
+import 'package:campushub/providers/favourite_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:campushub/services/favourite_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class ListingDetailScreen extends StatefulWidget {
   final Map<String, dynamic> listing;
@@ -17,24 +17,6 @@ class ListingDetailScreen extends StatefulWidget {
 }
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
-  final FavouriteService favouriteService = FavouriteService(); // Instance of the service to manage favourites
-  bool isFav = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFavourite(); // Load the favourite status when the screen initializes
-  }
-
-  void _loadFavourite() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return; 
-    final favs = await favouriteService.getFavourites(user.uid); // Get the list of favourite listing IDs for the current user
-    if (!mounted) return;
-    setState(() {
-      isFav = favs.contains(widget.docId); // Check if the current listing is in
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +27,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     final category = widget.listing['category'] ?? 'Unknown';
     final imageUrl = widget.listing['imageUrl'];
     final sellerName = widget.listing['sellerName'] ?? 'Anonymous';
+    final favouriteProvider = Provider.of<FavouriteProvider>(context);
+    final isFav = favouriteProvider.isFavourite(widget.docId); // Check if the listing is in the user's favourites
 
     final isService =
         (widget.listing['category'] ?? '').toString().toLowerCase() == 'service';
@@ -67,13 +51,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             actions: [
               IconButton(
                 onPressed: () async {
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user == null) return;
-                  await favouriteService.toggleFavourites(user.uid, widget.docId);
-                  if (!mounted) return;
-                  setState(() {
-                    isFav = !isFav; // Toggle the favourite status locally for immediate UI feedback
-                  });
+                  await favouriteProvider.toggleFavourite(widget.docId); // Toggle the favourite status of the listing
                 },
                 icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.white,),
               ),

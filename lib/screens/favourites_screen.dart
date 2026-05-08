@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:campushub/services/favourite_service.dart';
 import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:campushub/providers/favourite_provider.dart';
 
 class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
@@ -13,43 +13,16 @@ class FavouritesScreen extends StatefulWidget {
 }
 
 class _FavouritesScreenState extends State<FavouritesScreen> {
-  final FavouriteService favouriteService = FavouriteService();
-  final user = FirebaseAuth.instance.currentUser;
-
-  List<String> favouriteIds = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFavourites();
-  }
-
-  Future<void> _loadFavourites() async {
-    if (user == null) return;
-
-    final favs = await favouriteService.getFavourites(user!.uid);
-
-    setState(() {
-      favouriteIds = favs;
-      isLoading = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (user == null) {
-      return const Center(child: Text("Please log in"));
-    }
-
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    final favouriteProvider = Provider.of<FavouriteProvider>(context);
+    final favouriteIds = favouriteProvider.favouriteIds; // Get the list of favourite listing IDs
 
     if (favouriteIds.isEmpty) {
       return const Center(
         child: Text(
-          "No favourites yet 💔\nStart saving listings!",
+          "No favourites yet\nStart saving listings!",
           textAlign: TextAlign.center,
         ),
       );
@@ -74,7 +47,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
               const SizedBox(height: 40),
 
-              // PAGE TITLE
+              // Page header
               const Text(
                 "Your Favourites",
                 style: TextStyle(
@@ -85,7 +58,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
               const SizedBox(height: 20),
 
-              // LIST
+              // favourite listings
               Expanded(
                 child: ListView.builder(
                   itemCount: listings.length,
@@ -98,7 +71,6 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                       price: listing['price'] ?? '0',
                       imageUrl: listing['imageUrl'],
                       docId: listings[index].id,
-                      isFavourite: true,
                       onTap: () {
                         Navigator.push(
                           context,

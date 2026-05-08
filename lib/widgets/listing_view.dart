@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
-import 'package:campushub/services/favourite_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ListingsView extends StatefulWidget {
@@ -22,40 +21,8 @@ class ListingsView extends StatefulWidget {
 
 class _ListingsViewState extends State<ListingsView> {
   final FirestoreService _firestoreService = FirestoreService();
-  final FavouriteService _favouriteService = FavouriteService();
+
   final user = FirebaseAuth.instance.currentUser;
-
-  List<String> favouriteIds = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFavourites();
-  }
-
-  Future<void> _loadFavourites() async {
-    if (user == null) return;
-
-    final favs = await _favouriteService.getFavourites(user!.uid);
-
-    setState(() {
-      favouriteIds = favs;
-    });
-  }
-
-  void _toggleFavourite(String listingId) async {
-    if (user == null) return;
-
-    await _favouriteService.toggleFavourites(user!.uid, listingId);
-
-    setState(() {
-      if (favouriteIds.contains(listingId)) {
-        favouriteIds.remove(listingId);
-      } else {
-        favouriteIds.add(listingId);
-      }
-    });
-  }
 
 
   @override
@@ -105,24 +72,19 @@ class _ListingsViewState extends State<ListingsView> {
           itemBuilder: (context, index) {
             final listing = listings[index].data() as Map<String, dynamic>;
             final docId = listings[index].id;
-            final isFav = favouriteIds.contains(docId);
 
             return ListingCard(
               title: listing['title'] ?? 'No Title',
               price: listing['price'] ?? 'No Price',
               imageUrl: listing['imageUrl'],
               docId: docId,
-              isFavourite: isFav,
-              onFavouriteTap: () {
-                _toggleFavourite(docId);
-              },
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ListingDetailScreen(
                       listing: listing,
-                      docId: listings[index].id,
+                      docId: docId,
                     ), 
                   ),
                 );

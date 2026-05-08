@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:campushub/providers/favourite_provider.dart';
 
 class ListingCard extends StatelessWidget {
   final String title;
   final String price;
   final String? imageUrl;
   final String? docId;
-  final bool isFavourite;
-  final VoidCallback? onFavouriteTap;
   final VoidCallback? onTap;
 
   const ListingCard({
@@ -15,8 +15,6 @@ class ListingCard extends StatelessWidget {
     required this.price,
     this.imageUrl,
     this.docId,
-    this.isFavourite = false,
-    this.onFavouriteTap,
     this.onTap,
   });
 
@@ -92,13 +90,23 @@ class ListingCard extends StatelessWidget {
                   ),
                 ),
 
-                IconButton(
-                  onPressed: onFavouriteTap,
-                  icon: Icon(
-                    isFavourite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavourite ? Colors.red : Colors.grey,
-                  ),
-                ),
+                Builder(
+                  builder: (context) {
+                    final favouriteProvider = Provider.of<FavouriteProvider>(context);
+                    final isFav = favouriteProvider.isFavourite(docId ?? title); // Check if the listing is in the user's favourites
+
+                    return IconButton(
+                      onPressed: () {
+                        if (docId == null) return;
+                        favouriteProvider.toggleFavourite(docId!);
+                      },
+                      icon: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        color: isFav ? Colors.red : Colors.grey,
+                      ),
+                    );
+                  }
+                )
               ],
             ),
           ],

@@ -5,6 +5,8 @@ import 'addlisting_screen.dart';
 import 'package:campushub/widgets/search_bar.dart';
 import 'package:campushub/widgets/category_tabs.dart';
 import 'package:campushub/widgets/listing_view.dart';
+import 'package:provider/provider.dart';
+import 'package:campushub/providers/favourite_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,6 +19,15 @@ class _HomeScreenState extends State<HomeScreen> {
   int bottomIndex = 0; // State variable to track the currently selected index of the bottom navigation bar
   int categoryIndex = 0;
   String searchQuery = ""; // State variable to track the current search query
+
+  @override
+  void initState(){
+    super.initState();
+    // Load the user's favourite listings when the home screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FavouriteProvider>(context, listen: false).loadFavourites();
+    });
+  }
 
   Widget _buildPage() {
   if (bottomIndex == 0) {
