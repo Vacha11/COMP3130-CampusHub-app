@@ -10,9 +10,14 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // Controllers for email and password input fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  // Instance of the authentication service to handle login
   final AuthService _authService = AuthService();
+
+  // Track whether a login request is currently in progress
   bool _isLoading = false;
 
   @override
@@ -45,9 +50,47 @@ class _LoginScreenState extends State<LoginScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start, 
               children:[
-                const SizedBox(height:120),
+                const SizedBox(height:80),
+                // Branding header
+                Row(
+                  children: [
+                    Image.asset(
+                      "assets/images/lighthouse.png", 
+                      height: 30,
+                      color: const Color(0xFFA6192E),
+                    ),
+                    SizedBox(height: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const[
+                        Text(
+                          "CampusHub",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontFamily: 'Work Sans',
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFA6192E), // red
+                          ),
+                        ),
+                            
+                        Text(
+                          "Buy, Sell, Connect",
+                          style: TextStyle(
+                            fontSize: 8,
+                            fontFamily: 'Work Sans',
+                            color: Color(0xFFA6192E), // red
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20), 
+
+                // Email input field
                 const Text(
                   'Email',
                   style: TextStyle(
@@ -72,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 30),
 
+                // Password input field
                 const Text(
                   'Password',
                   style: TextStyle(
@@ -95,9 +139,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
 
+                // Login button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
+                    // When the login button is pressed, attempt to sign in with the provided email and password
                     onPressed:() async {
                       setState(() {
                         _isLoading = true;
@@ -105,17 +151,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       String email = _emailController.text.trim();
                       String password = _passwordController.text.trim();
 
+                      // Send login request to Firebase Authentication
                       var user = await _authService.signIn(email, password);
                       setState(() {
                         _isLoading = false;
                       });
                       if (user != null) {
+                        // Navigate to home screen if login is successful
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => const HomeScreen()
                         ),
                       );
                     } else {
+                        // Display error message if login fails
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Login failed. Please check your credentials and try again.')),
                         );
