@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/listing_service.dart';
+import 'package:campushub/widgets/app_label.dart';
+import 'package:campushub/widgets/app_text_fields.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
@@ -131,55 +133,6 @@ class _AddListingScreenState extends State<AddListingScreen> {
       Navigator.pop(context); // go back after saving
     }
   }
-
-  // a reusable styled text label
-  Widget _buildLabel(String text) {
-  return Text(
-    text,
-    style: const TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-      color: Color(0xFF373A36),
-    ),
-  );
-}
-  // a reusable input textfield to reduce repetition across form
-  Widget _buildTextField({
-  required TextEditingController controller,
-  required String hint,
-  int maxLines = 1,
-  TextInputType? keyboardType,
-  }) {
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFEDEBE5)),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFEDEBE5)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(
-            color: Color(0xFFA6192E),
-            width: 2,
-          ),
-        ),
-      ),
-    );
-  }
   
   Future<void> selectImage(ImageSource source) async{
     final selectedFile = await picker.pickImage(source: source);
@@ -259,9 +212,9 @@ class _AddListingScreenState extends State<AddListingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children:[
               // Title Input
-              _buildLabel("Title"),
+              const AppLabel(text: "Title"),
               const SizedBox(height: 5),
-              _buildTextField(
+              AppTextField(
                 controller: titleController, 
                 hint: "Enter Title",
               ),
@@ -269,7 +222,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
               
               // Select Category
-              _buildLabel("Category"),
+              const AppLabel(text: "Category"),
               const SizedBox(height: 7),
               Row(
                 children: [
@@ -282,9 +235,9 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
 
               // Price Input
-              _buildLabel("Price"),
+              const AppLabel(text: "Price"),
               const SizedBox(height: 5),
-              _buildTextField(
+              AppTextField(
                 controller: priceController, 
                 hint: "Enter Price",
                 keyboardType: TextInputType.number,
@@ -292,7 +245,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
 
               // Upload Image 
-              _buildLabel("Add Photo"),
+              const AppLabel(text: "Add Photo"),
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: _showImagePickerOptions,
@@ -329,9 +282,9 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
               
               // Contact Input
-              _buildLabel("Contact"),
+              const AppLabel(text: "Contact"),
               const SizedBox(height: 5),
-              _buildTextField(
+              AppTextField(
                 controller: contactController, 
                 hint: "Enter Contact Number",
               ),
@@ -339,9 +292,9 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
 
               // Description Input
-              _buildLabel("Description"),
+              const AppLabel(text: "Description"),
               const SizedBox(height: 5),
-              _buildTextField(
+              AppTextField(
                 controller: descriptionController, 
                 hint: "Enter Description",
                 maxLines: 4,

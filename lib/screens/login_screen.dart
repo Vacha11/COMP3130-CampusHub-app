@@ -1,6 +1,8 @@
 import 'package:campushub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/widgets/app_text_fields.dart';
+import 'package:campushub/widgets/app_label.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,13 +23,53 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    // Attempt sign in through the authentication service
+    final user = await _authService.signIn(email, password);
+
+    setState(() {
+      _isLoading = false;
+    });
+    // If login is successful, navigate to the home screen
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    } else {
+      // Show error message if authentication fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Login failed. Please check your credentials and try again.",
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // login screen UI for user authentication
     return Scaffold(
+       backgroundColor: const Color(0xFFF7F7F7),
       body: Stack(
         children: [
-          Container( // Background container with white color
-            color:Colors.white
-          ),
+          // Decorative gradient footer matching the app branding
           Align(
             alignment: Alignment.bottomCenter,
             child: Container( // Decorative container at the bottom with a gradient background
@@ -53,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.start, 
               children:[
                 const SizedBox(height:80),
-                // Branding header
+                // App logo and branding section
                 Row(
                   children: [
                     Image.asset(
@@ -61,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 30,
                       color: const Color(0xFFA6192E),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const[
@@ -69,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "CampusHub",
                           style: TextStyle(
                             fontSize: 12,
-                            fontFamily: 'Work Sans',
+                            fontFamily: 'WorkSans',
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFA6192E), // red
                           ),
@@ -79,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Buy, Sell, Connect",
                           style: TextStyle(
                             fontSize: 8,
-                            fontFamily: 'Work Sans',
+                            fontFamily: 'WorkSans',
                             color: Color(0xFFA6192E), // red
                             fontWeight: FontWeight.w500,
                           ),
@@ -91,97 +133,47 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20), 
 
                 // Email input field
-                const Text(
-                  'Email',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
+                const AppLabel(text: "Email"),
                 const SizedBox(height:8),
-
-                TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+                AppTextField(
+                  controller: _emailController, 
+                  hint: "Enter Email"
                 ),
 
                 const SizedBox(height: 30),
 
                 // Password input field
-                const Text(
-                  'Password',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
-                  ),
-                ),
+                const AppLabel(text: "Password"),
                 const SizedBox(height:8),
-                TextField(
-                  controller: _passwordController,
+                AppTextField(
+                  controller: _passwordController, 
+                  hint: "Enter Password",
                   obscureText: true,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 40),
 
-                // Login button
+                // Login button that authenticates users with Firebase
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     // When the login button is pressed, attempt to sign in with the provided email and password
-                    onPressed:() async {
-                      setState(() {
-                        _isLoading = true;
-                      });
-                      String email = _emailController.text.trim();
-                      String password = _passwordController.text.trim();
+                    onPressed: _isLoading ? null : _loginUser,
 
-                      // Send login request to Firebase Authentication
-                      var user = await _authService.signIn(email, password);
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      if (user != null) {
-                        // Navigate to home screen if login is successful
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const HomeScreen()
-                        ),
-                      );
-                    } else {
-                        // Display error message if login fails
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Login failed. Please check your credentials and try again.')),
-                        );
-                      }
-                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFA6192E), // red
+                      foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14), // button padding
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10), 
                       ),
                     ),
-                    child: const Text(
+                    child: _isLoading ? const CircularProgressIndicator(color: Colors.white) 
+                    : const Text(
                       "Log In",
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "WorkSans",
                       ),
                     ),
                       
