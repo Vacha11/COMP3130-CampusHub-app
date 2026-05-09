@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:campushub/services/firestore_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:campushub/services/listing_service.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
+  // This screen acts as both create + edit screen 
   final String? docId;
   final String? title;
   final String? description;
@@ -31,14 +30,20 @@ class AddListingScreen extends StatefulWidget {
 }
 
 class _AddListingScreenState extends State<AddListingScreen> {
+  // Controllers manage the text input state for form fields
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController contactController = TextEditingController();
-  File? selectedImage;
-  final ImagePicker picker = ImagePicker();
 
-  // Tracks selected category (0 = Item, 1 = Service)
+  // store the selected image first 
+  File? selectedImage;
+  
+  final ImagePicker picker = ImagePicker();
+  // listing service handles Firestore and image upload logic
+  final ListingService _listingService = ListingService();
+
+  // Tracks selected category (Item,Service)
   int selectedCategory = 0;
 
   @override
@@ -54,7 +59,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
  void initState(){
   super.initState();
 
-  // prefill data
+  // prefill data when editing and existing listing
   titleController.text = widget.title ?? '';
   descriptionController.text = widget.description ?? '';
   priceController.text = widget.price ?? '';
@@ -66,7 +71,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
   }
  }
 
-  // Builds category selection buttons (Item / Service)
+  // Build a reusable category selection button (Item / Service)
   Widget _buildCategoryButton(String title, int index) { 
    final isSelected = selectedCategory == index;
 
@@ -102,41 +107,80 @@ class _AddListingScreenState extends State<AddListingScreen> {
    );
  }
 
-  // Called when user presses "Post Listing"
+  // handles submit for create and edit listing
   void _submitListing() async {
-    final user = FirebaseAuth.instance.currentUser;
-    String? uploadedUrl;
-
-    if (selectedImage != null) {
-      uploadedUrl = await FirestoreService().uploadImage(selectedImage!);
-    }
-
-    String? imageUrl = uploadedUrl ?? widget.imageUrl;
-
-    final data = {
-      "title": titleController.text,
-      "description": descriptionController.text,
-      "price": priceController.text,
-      "category": selectedCategory == 0 ? "Item" : "Service",
-      "contact": contactController.text,
-      "createdAt": Timestamp.now(),
-      "userId": user?.uid,
-      "sellerName": user?.displayName ?? user?.email ?? "Anonymous",
-      "sellerEmail": user?.email,
-      "imageUrl": imageUrl,
-    };
-    if (widget.docId != null){
-      // update
-      await FirestoreService().updateListing(widget.docId!, data);
-    } else {
-      await FirestoreService().addListing(data);
-    }
+    final category = selectedCategory == 0 ? "Item" : "Service";
     
+    // upload image if new image is selected
+    final imageUrl = await _listingService.uploadListingImage(
+      selectedImage,
+      widget.imageUrl,
+    );
+
+    await _listingService.submitListing(
+      docId: widget.docId,
+      title: titleController.text,
+      description: descriptionController.text,
+      price: priceController.text,
+      category: category,
+      contact: contactController.text,
+      imageUrl: imageUrl,
+    );
+    // return to the previous screen aftr submitting
     if (mounted) {
       Navigator.pop(context); // go back after saving
     }
   }
 
+  // a reusable styled text label
+  Widget _buildLabel(String text) {
+  return Text(
+    text,
+    style: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 15,
+      color: Color(0xFF373A36),
+    ),
+  );
+}
+  // a reusable input textfield to reduce repetition across form
+  Widget _buildTextField({
+  required TextEditingController controller,
+  required String hint,
+  int maxLines = 1,
+  TextInputType? keyboardType,
+  }) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        hintText: hint,
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFEDEBE5)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFEDEBE5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(
+            color: Color(0xFFA6192E),
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+  
   Future<void> selectImage(ImageSource source) async{
     final selectedFile = await picker.pickImage(source: source);
 
@@ -207,7 +251,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
         ),
       ),
 
-      // Main form content
+      // a scrollable Main form content to avoid overflow on smaller screens
       body: SingleChildScrollView( 
         child:Padding(
           padding: const EdgeInsets.all(16),
@@ -215,57 +259,17 @@ class _AddListingScreenState extends State<AddListingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children:[
               // Title Input
-              const Text(
-                "Title",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ),
+              _buildLabel("Title"),
               const SizedBox(height: 5),
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  hintText: "Enter Title",
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFA6192E),
-                      width: 2,
-                    ),
-                  ),
-                ),
+              _buildTextField(
+                controller: titleController, 
+                hint: "Enter Title",
               ),
+              
               const SizedBox(height: 15),
               
               // Select Category
-              const Text(
-                "Category",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ), 
+              _buildLabel("Category"),
               const SizedBox(height: 7),
               Row(
                 children: [
@@ -275,62 +279,20 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 ],
               ),
 
-
               const SizedBox(height: 15),
 
               // Price Input
-              const Text(
-                "Price",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ),
+              _buildLabel("Price"),
               const SizedBox(height: 5),
-              TextField(
-                controller: priceController,
+              _buildTextField(
+                controller: priceController, 
+                hint: "Enter Price",
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: "Enter Price",
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFA6192E),
-                      width: 2,
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height: 15),
 
               // Upload Image 
-              const Text(
-                "Add Photo",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ),
+              _buildLabel("Add Photo"),
               const SizedBox(height: 10),
               GestureDetector(
                 onTap: _showImagePickerOptions,
@@ -342,118 +304,51 @@ class _AddListingScreenState extends State<AddListingScreen> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFFEDEBE5)),
                   ),
-                  child: selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.file(
-                            selectedImage!,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        )
-                      : const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_a_photo, size: 30),
-                              SizedBox(height: 6),
-                              Text("Tap to add image"),
-                            ],
-                          ),
-                        ),
+                  child: selectedImage != null ? ClipRRect(
+
+                    borderRadius: BorderRadius.circular(14),
+                    child: Image.file(
+                      selectedImage!,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    ),
+                  )
+                  : const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_a_photo, size: 30),
+                          SizedBox(height: 6),
+                          Text("Tap to add image"),
+                        ],
+                      ),
+                    ),
                 ),
               ),
             
               const SizedBox(height: 15),
               
               // Contact Input
-              const Text(
-                "Contact",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ),
-              TextField(
-                controller: contactController,
-                decoration: InputDecoration(
-                  hintText: "Enter Contact Number",
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFA6192E),
-                      width: 2,
-                    ),
-                  ),
-                ),
+              _buildLabel("Contact"),
+              const SizedBox(height: 5),
+              _buildTextField(
+                controller: contactController, 
+                hint: "Enter Contact Number",
               ),
 
               const SizedBox(height: 15),
 
               // Description Input
-              const Text(
-                "Description",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Color(0xFF373A36),
-                ),
-              ),
+              _buildLabel("Description"),
               const SizedBox(height: 5),
-              TextField(
-                controller: descriptionController,
+              _buildTextField(
+                controller: descriptionController, 
+                hint: "Enter Description",
                 maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: "Enter Description",
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFEDEBE5),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(
-                      color: Color(0xFFA6192E),
-                      width: 2,
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(height:20),
 
-              // submit form - Post Listing button
+              // submit form - Post Listing button and update listing button
               SizedBox(
                 width:double.infinity,
                 child: ElevatedButton(
