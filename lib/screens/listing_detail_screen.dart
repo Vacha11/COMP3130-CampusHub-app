@@ -1,9 +1,10 @@
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:campushub/models/listing_model.dart';
 
 class ListingDetailScreen extends StatefulWidget {
-  final Map<String, dynamic> listing;
+  final ListingModel listing;
   final String docId;
 
   const ListingDetailScreen({
@@ -18,21 +19,59 @@ class ListingDetailScreen extends StatefulWidget {
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
+  // reusable UI builder for details sections (description, seller, contact)
+  Widget _sectionCard({
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          child,
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final title = widget.listing['title'] ?? 'No Title';
-    final price = widget.listing['price'] ?? '0';
-    final description = widget.listing['description'] ?? 'No description provided';
-    final contact = widget.listing['contact'] ?? 'No contact';
-    final category = widget.listing['category'] ?? 'Unknown';
-    final imageUrl = widget.listing['imageUrl'];
-    final sellerName = widget.listing['sellerName'] ?? 'Anonymous';
+    // extract listing data from firestore with safe fallbacks
+    final title = widget.listing.title;
+    final price = widget.listing.price;
+    final description = widget.listing.description;
+    final contact = widget.listing.contact;
+    final category = widget.listing.category;
+    final imageUrl = widget.listing.imageUrl;
+    final sellerName = widget.listing.sellerName;
+
     final favouriteProvider = Provider.of<FavouriteProvider>(context);
-    final isFav = favouriteProvider.isFavourite(widget.docId); // Check if the listing is in the user's favourites
+     // Check if the listing is in the user's favourites
+    final isFav = favouriteProvider.isFavourite(widget.docId);
 
-    final isService =
-        (widget.listing['category'] ?? '').toString().toLowerCase() == 'service';
-
+    // Determine if the listing is a service to adjust price formatting
+    final isService = (widget.listing.category).toString().toLowerCase() == 'service';
     final formattedPrice = "\$$price${isService ? '/hr' : ''}";
 
     return Scaffold(
@@ -42,6 +81,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
         slivers: [
 
           // image + title + price + category
+          // a top expandable header showcasing the image with a favourite action button
           SliverAppBar(
             expandedHeight: 340,
             pinned: true,
@@ -64,7 +104,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-
+                  // hero animation for a smoother image transition
                   Hero(
                     tag: widget.docId,
                     child: imageUrl != null
@@ -89,7 +129,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             ),
           ),
 
-          // details section
+          // Main details section
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20),
@@ -204,42 +244,6 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-   // helper for details sections (description, seller, contact)
-  Widget _sectionCard({
-    required String title,
-    required Widget child,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          child,
         ],
       ),
     );

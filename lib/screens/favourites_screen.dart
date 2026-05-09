@@ -4,6 +4,7 @@ import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
+import 'package:campushub/models/listing_model.dart';
 
 class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
@@ -35,6 +36,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
           return const Center(child: CircularProgressIndicator());
         }
 
+        // Filter only favourited listings
         final listings = snapshot.data!.docs.where((doc) {
           return favouriteIds.contains(doc.id);
         }).toList();
@@ -63,22 +65,26 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                 child: ListView.builder(
                   itemCount: listings.length,
                   itemBuilder: (context, index) {
-                    final listing =
-                        listings[index].data() as Map<String, dynamic>;
+                    // Convert Firestore document into ListingModel
+                    final listing = ListingModel.fromMap(
+                      listings[index].id,
+                      listings[index].data() as Map<String, dynamic>,
+                    );
 
                     return ListingCard(
-                      title: listing['title'] ?? 'No Title',
-                      price: listing['price'] ?? '0',
-                      category: listing['category'] ?? '',
-                      imageUrl: listing['imageUrl'],
-                      docId: listings[index].id,
+                      title: listing.title,
+                      price: listing.price,
+                      category: listing.category,
+                      imageUrl: listing.imageUrl,
+                      docId: listing.id,
                       onTap: () {
+                        // navigate to the detailed listing view screen 
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => ListingDetailScreen(
                               listing: listing,
-                              docId: listings[index].id,
+                              docId: listing.id,
                             ),
                           ),
                         );

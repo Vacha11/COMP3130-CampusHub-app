@@ -4,6 +4,7 @@ import 'package:campushub/services/firestore_service.dart';
 import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:campushub/models/listing_model.dart';
 
 class ListingsView extends StatefulWidget {
   final int categoryIndex;
@@ -31,11 +32,11 @@ class _ListingsViewState extends State<ListingsView> {
       stream: _firestoreService.getListings(),
 
       builder: (context, snapshot) {
-
+        // loading state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-
+        // error state
         if (snapshot.hasError) {
           return const Center(child: Text("Error loading listings"));
         }
@@ -46,18 +47,22 @@ class _ListingsViewState extends State<ListingsView> {
 
         final allListings = snapshot.data!.docs;
 
-        // filter listing by category
-        final listings = allListings.where((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-
-          final category = (data['category'] ?? '').toString().toLowerCase();
+        // convert firestore to ListingModel + filtering
+        final listings = allListings.map((doc) {
+          return ListingModel.fromMap(
+            doc.id,
+            doc.data() as Map<String, dynamic>,
+          );
+        }).where((listing){
+          // category filter
+          final category = listing.category.toLowerCase();
 
           final matchesCategory = widget.categoryIndex == 0 || (widget.categoryIndex == 1 && category == 'item') || (widget.categoryIndex == 2 && category == 'service');
 
-
           // filter based on search
-          final title = (data['title'] ?? '').toString().toLowerCase();
+          final title = listing.title.toLowerCase();
 
+          // search filter
           final matchesSearch = title.contains(widget.searchQuery.toLowerCase());
 
           return matchesCategory && matchesSearch;
@@ -70,22 +75,22 @@ class _ListingsViewState extends State<ListingsView> {
         return ListView.builder(
           itemCount: listings.length,
           itemBuilder: (context, index) {
-            final listing = listings[index].data() as Map<String, dynamic>;
-            final docId = listings[index].id;
+            final listing = listings[index];
 
             return ListingCard(
-              title: listing['title'] ?? 'No Title',
-              price: listing['price'] ?? 'No Price',
-              category: listing['category'] ?? '',
-              imageUrl: listing['imageUrl'],
-              docId: docId,
+              title: listing.title,
+              price: listing.price,
+              category: listing.category,
+              imageUrl: listing.imageUrl,
+              docId: listing.id,
               onTap: () {
+                // navigate to detailed listing screen 
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (_) => ListingDetailScreen(
                       listing: listing,
-                      docId: docId,
+                      docId: listing.id,
                     ), 
                   ),
                 );
