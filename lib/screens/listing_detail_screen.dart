@@ -53,7 +53,10 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                 onPressed: () async {
                   await favouriteProvider.toggleFavourite(widget.docId); // Toggle the favourite status of the listing
                 },
-                icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, color: isFav ? Colors.red : Colors.white,),
+                icon: Icon(isFav ? Icons.favorite : Icons.favorite_border, 
+                size: 40,
+                color: isFav ? const Color(0xFFD6001C) : const Color(0xFFA6192E).withOpacity(0.6),
+                ),
               ),
             ],
 
@@ -122,7 +125,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                         child: Text(
                           formattedPrice,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFA6192E),
                           ),
@@ -132,8 +135,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                       // category
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                          horizontal: 16,
+                          vertical: 10,
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xFFA6192E).withOpacity(0.1),
@@ -143,8 +146,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           category.toUpperCase(),
                           style: const TextStyle(
                             color: Color(0xFFA6192E),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                       ),

@@ -19,14 +19,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  File? _profileImage; // Variable to hold the selected image file
-  final ImagePicker _picker = ImagePicker(); // Image picker instance to handle image selection
+  File? _profileImage; 
+  final ImagePicker _picker = ImagePicker(); 
   final UserProfileService _profileService = UserProfileService();
 
   // Function to pick an image from the gallery or take a photo using the camera
   Future<void> _pickProfileImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source); // Open the image picker to select an image from the gallery or take photo using the camera
-    if (pickedFile == null) return; // If no image is selected, return early
+    if (pickedFile == null) return; 
     final file = File (pickedFile.path); // Create a File object from the selected image path
     final user = FirebaseAuth.instance.currentUser; 
     if(user == null) return;
@@ -53,26 +53,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Choose from Gallery'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
-                  _pickProfileImage(ImageSource.gallery); // Open the image picker for gallery selection
+                  Navigator.pop(context); 
+                  _pickProfileImage(ImageSource.gallery); 
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Take a Photo'),
                 onTap: () {
-                  Navigator.pop(context); // Close the bottom sheet
-                  _pickProfileImage(ImageSource.camera); // Open the image picker for camera capture
+                  Navigator.pop(context); 
+                  _pickProfileImage(ImageSource.camera); 
                 },
               ),
             ],
           ),
         );
       }
-    ); // Show a bottom sheet with options to choose between gallery and camera for image selection
+    ); 
   }
 
-  String? _profileImageUrl; // Variable to hold the URL of the profile image
+  String? _profileImageUrl; 
   @override
   void initState() {
     super.initState();
@@ -93,15 +93,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfileListingCard(String docId, Map<String, dynamic>data){
     final imageUrl = data['imageUrl'] ?? '';
     return Container(
+      constraints: const BoxConstraints(
+        minHeight: 120,
+      ),
       margin: const EdgeInsets.only(bottom:12),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: const Color(0xFFEDEBE5),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -110,8 +118,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           //Image placeholder
           
           Container(
-            height: 60,
-            width: 60,
+            height: 100,
+            width: 100,
             decoration: BoxDecoration(
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
@@ -136,12 +144,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   data['title'] ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF373A36),fontSize: 17),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "${data['price'] ?? ''}",
-                  style: const TextStyle(color:Colors.red),
+                  "\$${data['price'] ?? ''}${(data['category'] ?? '').toString().toLowerCase() == 'service' ? '/hr' : ''}",
+                  style: const TextStyle(color:Color(0xFFA6192E), fontWeight: FontWeight.bold,fontSize:16),
                 ),
               ],
             ),
@@ -149,9 +157,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           // Actions - Edit and update 
           Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children:[
               IconButton(
-                icon: const Icon(Icons.edit),
+                icon: const Icon(Icons.edit, color:Color(0xFF373A36)),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -170,11 +179,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               ),
               IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color:Color(0xFF373A36)),
                 onPressed:() async {
                   final confirm = await showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
+                      backgroundColor: const Color(0xFFF7F7F7),
                       title: const Text(
                         "Delete Listing"
                       ),
@@ -184,11 +194,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       actions:[
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Cancel"),
+                          child: const Text("Cancel", style:TextStyle(color: Color(0xFF373A36))),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Delete"),
+                          child: const Text(
+                            "Delete",
+                            style: TextStyle(
+                              color: Color(0xFFA6192E),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -211,27 +227,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F7F7),
       
       //logout in top right corner
       appBar: AppBar(
+        backgroundColor: const Color(0xFFF7F7F7),
         automaticallyImplyLeading: false, // Remove the default back button from the AppBar
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Color(0xFF373A36)),
             onPressed: () async {
               final confirmLogout = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
+                  backgroundColor: const Color(0xFFF7F7F7),
                   title: const Text("Logout"),
                   content: const Text("Are you sure you want to logout?"),
                   actions:[
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text("Cancel"),
+                      child: const Text(
+                        "Cancel",
+                        style:TextStyle(color: Color(0xFF373A36)),
+                      ),
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text("Logout"),
+                      child: const Text(
+                        "Logout", 
+                        style: TextStyle(
+                          color: Color(0xFFA6192E),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -263,7 +291,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         radius:55,
                         backgroundColor: Colors.grey[300],
                         backgroundImage: _profileImage != null ? NetworkImage(_profileImageUrl!) : (_profileImageUrl != null ? FileImage(_profileImage!) : null) as ImageProvider?, // Display the selected profile image if available, otherwise display the image from the URL if available
-                        child: _profileImageUrl == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Colors.white) : null,
+                        child: _profileImageUrl == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Color(0xFF373A36)) : null,
                       ),
                       Positioned(
                         bottom: 0,
@@ -271,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: Color(0xFFA6192E),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.edit, size: 16, color: Colors.white),
@@ -280,25 +308,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 20), 
                 Text(
                   user?.email?.split('@')[0] ?? 'User', // Display the username (part of the email before '@') or 'User' if email is not available
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold), // Styling for the username text
+                  style: TextStyle(
+                    fontSize: 24, 
+                    fontWeight: FontWeight.bold,
+                    color:Color(0xFF373A36),
+                  ), 
                 ),
             
-                const SizedBox(height: 10), // Spacing between the username and email
+                const SizedBox(height: 5), 
 
                 Text(
                   user?.email ?? 'No email', // Display the user's email or 'No email' if email is not available
-                  style: TextStyle(fontSize: 16, color: Colors.grey), // Styling for the email text
+                  style: TextStyle(fontSize: 16, color: Colors.grey), 
                 ),
 
-                const SizedBox(height: 30), // Spacing between the email and the listings 
+                const SizedBox(height: 30), 
             
                 const Divider(),
-                const Text ("My Listings", style:TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const Text (
+                  "My Listings", 
+                  style:TextStyle(
+                    fontSize: 18, 
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF373A36),
+                  ),
+                ),
                 const Divider(),
 
-              
+                // User's listings
                 StreamBuilder<QuerySnapshot>(
                   stream: FirestoreService().getUserListings(user!.uid),
                   builder:(context, snapshot){
@@ -316,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemCount: listings.length,
                       itemBuilder: (context, index){
                         final data = listings[index].data() as Map<String, dynamic>;
-                        return _buildProfileListingCard(listings[index].id, data);
+                        return _buildProfileListingCard(listings[index].id, data); // Build a card for each listing with options to edit or delete
                       },
                     );
                   },

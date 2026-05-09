@@ -81,15 +81,20 @@ class _AddListingScreenState extends State<AddListingScreen> {
        child: Container(
          padding: const EdgeInsets.symmetric(vertical: 12),
          decoration: BoxDecoration(
-           color: isSelected ? Colors.red : Colors.grey[200],
+           color: isSelected ? const Color(0xFFA6192E) :  Colors.white,
            borderRadius: BorderRadius.circular(10),
+           border: Border.all(
+            color: isSelected ? const Color(0xFFA6192E) : const Color(0xFFEDEBE5),
+            width: 1,
+           ),
          ),
          alignment: Alignment.center,
          child: Text(
            title,
            style: TextStyle(
-             color: isSelected ? Colors.white : Colors.black,
+             color: isSelected ? Colors.white : Color(0xFF373A36),
              fontWeight: FontWeight.bold,
+             fontSize: 15,
            ),
          ),
        ),
@@ -139,19 +144,63 @@ class _AddListingScreenState extends State<AddListingScreen> {
       setState(() {
         selectedImage = File(selectedFile.path);
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            source == ImageSource.camera
+            ? "Photo captured successfully"
+            : "Image selected from gallery",
+          ),
+          backgroundColor: const Color(0xFFA6192E),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
+
+  void _showImagePickerOptions() {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) {
+      return SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                selectImage(ImageSource.camera);
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF7F7F7),
 
       // Top bar with back button
       appBar: AppBar( 
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF7F7F7),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color:Colors.black),
+          icon: const Icon(Icons.arrow_back, color:Color(0xFF373A36)),
           onPressed: (){
             Navigator.pop(context); // go back to previous screen
           },
@@ -166,19 +215,57 @@ class _AddListingScreenState extends State<AddListingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children:[
               // Title Input
-              const Text("Title"),
+              const Text(
+                "Title",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
+              ),
               const SizedBox(height: 5),
               TextField(
                 controller: titleController,
-                decoration:const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Enter Title",
-                  border:OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFA6192E),
+                      width: 2,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 15),
               
               // Select Category
-              const Text("Category"), 
+              const Text(
+                "Category",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
+              ), 
               const SizedBox(height: 7),
               Row(
                 children: [
@@ -192,88 +279,176 @@ class _AddListingScreenState extends State<AddListingScreen> {
               const SizedBox(height: 15),
 
               // Price Input
-              const Text("Price"),
+              const Text(
+                "Price",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
+              ),
               const SizedBox(height: 5),
               TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   hintText: "Enter Price",
-                  border: OutlineInputBorder(),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFA6192E),
+                      width: 2,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 15),
 
               // Upload Image 
-              const Text("Add Photo"),
-              const SizedBox(height: 7),
-              Column(
-                children: [
-                  Row(
-                    children:[
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () => selectImage(ImageSource.gallery), // open gallery to select image
-                          icon: const Icon(Icons.photo_library),
-                          label: const Text("Gallery"),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () => selectImage(ImageSource.camera), // open camera to take photo
-                          icon: const Icon(Icons.camera_alt),
-                          label: const Text("Camera"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              const Text(
+                "Add Photo",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
               ),
-                Container(
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: _showImagePickerOptions,
+                child: Container(
                   height: 150,
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFEDEBE5)),
                   ),
                   child: selectedImage != null
-                  ? ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.file(
-                      selectedImage!, 
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  )
-                  : const Center(
-                    child: Icon(Icons.add_a_photo, size: 30),
-                  ),
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(14),
+                          child: Image.file(
+                            selectedImage!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        )
+                      : const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_a_photo, size: 30),
+                              SizedBox(height: 6),
+                              Text("Tap to add image"),
+                            ],
+                          ),
+                        ),
                 ),
+              ),
             
               const SizedBox(height: 15),
               
               // Contact Input
-              const Text("Contact"),
+              const Text(
+                "Contact",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
+              ),
               TextField(
                 controller: contactController,
-                decoration: const InputDecoration(
-                  hintText:"Enter contact number",
-                  border:OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: "Enter Contact Number",
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFA6192E),
+                      width: 2,
+                    ),
+                  ),
                 ),
               ),
 
               const SizedBox(height: 15),
 
               // Description Input
-              const Text("Description"),
+              const Text(
+                "Description",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF373A36),
+                ),
+              ),
               const SizedBox(height: 5),
               TextField(
                 controller: descriptionController,
                 maxLines: 4,
-                decoration: const InputDecoration(
-                  hintText:"Enter Description",
-                  border:OutlineInputBorder(),
+                decoration: InputDecoration(
+                  hintText: "Enter Description",
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFEDEBE5),
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFA6192E),
+                      width: 2,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height:20),
@@ -284,7 +459,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 child: ElevatedButton(
                   onPressed:_submitListing,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor:const Color(0xFFA6192E),
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(

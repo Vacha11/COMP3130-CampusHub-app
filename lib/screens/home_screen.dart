@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      floatingActionButton: SizedBox(
+      floatingActionButton: (bottomIndex == 0 || bottomIndex == 2) ? SizedBox(
         width: 150,
         child: FloatingActionButton.extended(
           onPressed: () {
@@ -142,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(color: Colors.white),
           ),
         ),
-      ),
+      )
+      :null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     ); 
   }
