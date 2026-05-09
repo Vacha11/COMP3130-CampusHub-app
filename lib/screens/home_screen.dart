@@ -1,12 +1,8 @@
-import 'package:campushub/screens/favourites_screen.dart';
-import 'package:campushub/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'addlisting_screen.dart';
-import 'package:campushub/widgets/search_bar.dart';
-import 'package:campushub/widgets/category_tabs.dart';
-import 'package:campushub/widgets/listing_view.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
+import 'package:campushub/widgets/home_content.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,9 +12,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int bottomIndex = 0; // State variable to track the currently selected index of the bottom navigation bar
+  // Track which bottom navigation tab is selected (Home / Favourites / Profile)
+  int bottomIndex = 0; 
+
+  // Track which category is selected for listings (All / Items / Services)
   int categoryIndex = 0;
-  String searchQuery = ""; // State variable to track the current search query
+
+  // Stores search input for filtering listings in real time
+  String searchQuery = ""; 
 
   @override
   void initState(){
@@ -29,69 +30,31 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _buildPage() {
-  if (bottomIndex == 0) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        const SizedBox(height: 40), // Spacing at the top of the home screen
-
-        Material(
-          elevation: 6,
-          borderRadius: BorderRadius.circular(16),
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SearchBarWidget(
-                  onChanged: (value){
-                    setState(() {
-                      searchQuery = value; // Update the search query state variable when the search input changes
-                    });
-                  },
-                ),
-                const SizedBox(height: 20), // Spacing between the search bar and category tabs
-
-                CategoryTabSelector(
-                  selectedIndex: categoryIndex,
-                  onTabSelected: (index) {
-                    setState(() {
-                      categoryIndex = index;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-
-        Expanded(
-          child: ListingsView(categoryIndex: categoryIndex,searchQuery: searchQuery),
-        ),
-      ],
-    );
-  } else if (bottomIndex == 1) {
-    return const FavouritesScreen(); // Display "Favourites" text when the second tab is selected
-  } else {
-    return ProfileScreen(); // Display "Profile" text when the third tab is selected
-  }
-
-
-}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
-      body: _buildPage(), // Display the content based on the selected index
+      // Main dynamic body controlled by bottom navigation state
+      body: homeContent(
+        bottomIndex: bottomIndex, 
+        categoryIndex: categoryIndex, 
+        searchQuery: searchQuery, 
+        // Callback: updates category filter when user taps tabs
+        onCategoryChanged: (index) {
+          setState(() => categoryIndex = index);
+        }, 
+        // Callback: updates search filter in real time
+        onSearchChanged: (value) {
+          setState(() => searchQuery = value);
+        },
+      ),
+
+      // // Bottom navigation bar controlling main app sections
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
+            // subtle elevation effect for modern UI feel
             BoxShadow(
               color: Colors.black.withOpacity(0.15),
               blurRadius: 20,
@@ -100,16 +63,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         child: BottomNavigationBar(
-          currentIndex: bottomIndex, // Set the current index of the bottom navigation bar
+          currentIndex: bottomIndex, 
+          // updates screen based on tab selection
           onTap: (index){
             setState(() {
-              bottomIndex = index; // Update the selected index when a navigation item is tapped
+              bottomIndex = index; 
             });
           },
           selectedItemColor: const Color(0xFFA6192E),
           unselectedItemColor: const Color(0xFF373A36).withOpacity(0.6),
           backgroundColor: Colors.white,
           elevation:0,
+          // Main app navigation structure
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home), // Home icon for the first tab
@@ -126,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+
+      // Floating action button only shown on Home + Profile screens
       floatingActionButton: (bottomIndex == 0 || bottomIndex == 2) ? SizedBox(
         width: 150,
         child: FloatingActionButton.extended(
@@ -144,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       )
       :null,
+
+      // centers button above bottom navigation
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     ); 
   }
