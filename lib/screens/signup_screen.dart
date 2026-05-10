@@ -1,11 +1,11 @@
 import 'package:campushub/screens/login_screen.dart';
-import 'package:campushub/widgets/auth_layout.dart';
+import 'package:campushub/widgets/auth/auth_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service.dart';
 import 'home_screen.dart';
-import 'package:campushub/widgets/app_label.dart';
-import 'package:campushub/widgets/app_text_fields.dart';
-import 'package:campushub/widgets/auth_header.dart';
+import 'package:campushub/widgets/common/app_label.dart';
+import 'package:campushub/widgets/common/app_text_fields.dart';
+import 'package:campushub/widgets/auth/auth_header.dart';
 
 // Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {

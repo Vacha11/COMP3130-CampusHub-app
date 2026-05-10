@@ -1,10 +1,10 @@
 import 'package:campushub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service.dart';
-import 'package:campushub/widgets/app_text_fields.dart';
-import 'package:campushub/widgets/app_label.dart';
-import 'package:campushub/widgets/auth_layout.dart';
-import 'package:campushub/widgets/auth_header.dart';
+import 'package:campushub/widgets/common/app_text_fields.dart';
+import 'package:campushub/widgets/common/app_label.dart';
+import 'package:campushub/widgets/auth/auth_layout.dart';
+import 'package:campushub/widgets/auth/auth_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -121,19 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
                       
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextButton(
-            onPressed: () {
-                    // to do
-            },
-            child: const Text(
-              "Forgot Password?",
-              style: TextStyle(
-                color: Color(0xFFA6192E), // red
-                fontSize: 14,
-              ),
             ),
           ),
         ],

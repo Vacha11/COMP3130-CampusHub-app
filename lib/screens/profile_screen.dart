@@ -7,9 +7,9 @@ import 'package:campushub/services/firestore_service.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/user_profile_service.dart';
-import 'package:campushub/widgets/profile_listing_card.dart';
-import 'package:campushub/widgets/confirmation_dialog.dart';
-import 'package:campushub/widgets/profile_header.dart';
+import 'package:campushub/widgets/profile/profile_listing_card.dart';
+import 'package:campushub/widgets/common/confirmation_dialog.dart';
+import 'package:campushub/widgets/profile/profile_header.dart';
 import 'package:campushub/models/listing_model.dart';
 
 
@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // Stores locally selected profile image (from camera/gallery)
   File? _profileImage; 
   final ImagePicker _picker = ImagePicker(); 
-  
+
   // Service layer for handling profile image upload & Firestore updates
   final UserProfileService _profileService = UserProfileService();
 

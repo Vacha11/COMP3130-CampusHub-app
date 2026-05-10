@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/listing_service.dart';
-import 'package:campushub/widgets/app_label.dart';
-import 'package:campushub/widgets/app_text_fields.dart';
+import 'package:campushub/widgets/common/app_label.dart';
+import 'package:campushub/widgets/common/app_text_fields.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:campushub/screens/favourites_screen.dart';
 import 'package:campushub/screens/profile_screen.dart';
-import 'package:campushub/widgets/search_bar.dart';
-import 'package:campushub/widgets/category_tabs.dart';
-import 'package:campushub/widgets/listing_view.dart';
+import 'package:campushub/widgets/home/search_bar.dart';
+import 'package:campushub/widgets/home/category_tabs.dart';
+import 'package:campushub/widgets/listings/listing_view.dart';
 
 class homeContent extends StatelessWidget {
   final int bottomIndex;

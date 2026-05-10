@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'addlisting_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
-import 'package:campushub/widgets/home_content.dart';
+import 'package:campushub/widgets/home/home_content.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

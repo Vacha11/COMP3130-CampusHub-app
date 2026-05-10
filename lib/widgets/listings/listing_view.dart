@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:campushub/services/firestore_service.dart';
-import 'package:campushub/widgets/listing_card.dart';
+import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campushub/models/listing_model.dart';
