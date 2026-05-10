@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'package:campushub/widgets/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
@@ -28,7 +27,7 @@ class _ListingsViewState extends State<ListingsView> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return StreamBuilder<List<ListingModel>>(
       stream: _firestoreService.getListings(),
 
       builder: (context, snapshot) {
@@ -41,19 +40,14 @@ class _ListingsViewState extends State<ListingsView> {
           return const Center(child: Text("Error loading listings"));
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text("No listings available"));
         }
 
-        final allListings = snapshot.data!.docs;
+        final allListings = snapshot.data!;
 
         // convert firestore to ListingModel + filtering
-        final listings = allListings.map((doc) {
-          return ListingModel.fromMap(
-            doc.id,
-            doc.data() as Map<String, dynamic>,
-          );
-        }).where((listing){
+        final listings = allListings.where((listing){
           // category filter
           final category = listing.category.toLowerCase();
 

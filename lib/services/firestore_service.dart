@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
+import 'package:campushub/models/listing_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -55,20 +56,36 @@ class FirestoreService {
   }
   
   // Read all listings
-  Stream<QuerySnapshot> getListings() { // Read all listings
+  Stream<List<ListingModel>>getListings() { // Read all listings
     return _db.collection('listings')
      .orderBy('createdAt', descending: true)
-     .snapshots();
+     .snapshots()
+     .map((snapshot){
+        return snapshot.docs.map((doc) {
+          return ListingModel.fromMap(
+            doc.id,
+            doc.data() as Map<String, dynamic>,
+          );
+        }).toList();
+     });
   }
   // user specific listings
-  Stream<QuerySnapshot> getUserListings(String userID){ // Read user specific listings
+  Stream<List<ListingModel>> getUserListings(String userID){ // Read user specific listings
     return _db.collection('listings')
       .where('userId', isEqualTo: userID)
-      .snapshots();
+      .snapshots()
+      .map((snapshot){
+        return snapshot.docs.map((doc) {
+          return ListingModel.fromMap(
+            doc.id,
+            doc.data() as Map<String, dynamic>,
+          );
+        }).toList();
+      });
   }
 
   // listing by category
-  Stream<QuerySnapshot> getListingsByCategory(String category){
+  Stream<List<ListingModel>> getListingsByCategory(String category){
     if(category == 'All'){
       return getListings();
     }
@@ -77,15 +94,31 @@ class FirestoreService {
       .collection('listings')
       .where('category', isEqualTo: category)
       .orderBy('createdAt', descending:true)
-      .snapshots();
+      .snapshots()
+      .map((snapshot){
+        return snapshot.docs.map((doc) {
+          return ListingModel.fromMap(
+            doc.id,
+            doc.data() as Map<String, dynamic>,
+          );
+        }).toList();
+      });
   }
 
-  Stream<QuerySnapshot> searchListings(String query){
+  Stream<List<ListingModel>> searchListings(String query){
     return _db
       .collection('listings')
       .orderBy('title')
       .startAt([query])
       .endAt([query + '\uf8ff'])
-      .snapshots();
+      .snapshots()
+      .map((snapshot){
+        return snapshot.docs.map((doc) {
+          return ListingModel.fromMap(
+            doc.id,
+            doc.data() as Map<String, dynamic>,
+          );
+        }).toList();
+      });
   }
 }

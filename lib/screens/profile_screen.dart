@@ -4,12 +4,13 @@ import 'package:campushub/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
 import 'package:campushub/services/firestore_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/user_profile_service.dart';
 import 'package:campushub/widgets/profile_listing_card.dart';
 import 'package:campushub/widgets/confirmation_dialog.dart';
+import 'package:campushub/widgets/profile_header.dart';
+import 'package:campushub/models/listing_model.dart';
 
 
 
@@ -21,29 +22,35 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+   final AuthService _authService = AuthService(); 
+
+  // Stores locally selected profile image (from camera/gallery)
   File? _profileImage; 
   final ImagePicker _picker = ImagePicker(); 
+  
+  // Service layer for handling profile image upload & Firestore updates
   final UserProfileService _profileService = UserProfileService();
 
-  // Function to pick an image from the gallery or take a photo using the camera
+  // Uploads image to Firebase Storage and updates Firestore
   Future<void> _pickProfileImage(ImageSource source) async {
-    final pickedFile = await _picker.pickImage(source: source); // Open the image picker to select an image from the gallery or take photo using the camera
+    final pickedFile = await _picker.pickImage(source: source); 
     if (pickedFile == null) return; 
-    final file = File (pickedFile.path); // Create a File object from the selected image path
+    final file = File (pickedFile.path); 
     final user = FirebaseAuth.instance.currentUser; 
     if(user == null) return;
     final url = await _profileService.uploadProfilePicture(file, user.uid); 
     
-    await _profileService.saveProfileImageUrl(user.uid, url); // Upload the selected image to Firebase Storage and save the download URL to Firestore under the user's document
+    await _profileService.saveProfileImageUrl(user.uid, url); 
 
-    final imageUrl = await _profileService.getProfileImageUrl(user.uid); // Get the download URL of the uploaded image
+    final imageUrl = await _profileService.getProfileImageUrl(user.uid); 
 
     setState(() {
-      _profileImage = file; // Update the state with the selected image file to display it in the UI
-      _profileImageUrl = imageUrl; // Update the state with the retrieved image URL to display it in the UI
+      _profileImage = file; 
+      _profileImageUrl = imageUrl; 
     });
   }
 
+  // Open bottom sheet for choosing image source (camera/gallery)
   void _showImagePickerOptions() {
     showModalBottomSheet(
       context: context,
@@ -81,6 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfileImage(); // Load the profile image when the widget is initialized
   }
 
+  // Fetche existing profile image URL from Firestore
   Future<void> _loadProfileImage() async {
     final user = FirebaseAuth.instance.currentUser;
     if(user == null) return;
@@ -89,9 +97,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _profileImageUrl = url; // Update the state with the retrieved profile image URL to display it in the UI
     });
   }
-
-  final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
   
+  // Handles user logout after confirmation dialog
+Future<void> _logoutUser() async {
+
+  // Show logout confirmation dialog
+  final confirmLogout = await showDialog(
+    context: context,
+
+    builder: (context) => const ConfirmationDialog(
+      title: "Logout",
+      content: "Are you sure you want to logout?",
+      confirmText: "Logout",
+    ),
+  );
+
+  // Stop if user cancels logout
+  if (confirmLogout != true) return;
+
+  // Sign out the current user
+  await _authService.signOut();
+
+  // Navigate back to login screen
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const LoginScreen(),
+    ),
+  );
+}
+
+// Handle deleting a listing after confirmation
+Future<void> _deleteListing(String docId) async {
+
+  // Show delete confirmation dialog
+  final confirm = await showDialog(
+    context: context,
+
+    builder: (context) => const ConfirmationDialog(
+      title: "Delete Listing",
+      content: "Are you sure?",
+      confirmText: "Delete",
+    ),
+  );
+
+  // Stop if user cancels delete
+  if (confirm != true) return;
+
+  // Delete listing from Firestore
+  await FirestoreService().deleteListing(docId);
+}
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -106,79 +162,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Color(0xFF373A36)),
-            onPressed: () async {
-              final confirmLogout = await showDialog(
-                context: context,
-                builder: (context) => const ConfirmationDialog(
-                  title: "Logout",
-                  content: "Are you sure you want to logout?",
-                  confirmText: "Logout",
-                ),
-              );
-              if (confirmLogout == true) {
-                await _authService.signOut(); // Call the signOut method from AuthService to log the user out
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()), // Navigate to the Login
-                  // Screen after logging out
-                );
-              }
-            },
+            onPressed: _logoutUser,
           ),
         ],
       ),
+      // Main profile screen content
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(        
               children: [
-                // Profile image
-                GestureDetector(
-                  onTap: _showImagePickerOptions, 
-                  child: Stack(
-                    children:[
-                      CircleAvatar(
-                        radius:55,
-                        backgroundColor: Colors.grey[300],
-                        backgroundImage: _profileImage != null ? NetworkImage(_profileImageUrl!) : (_profileImageUrl != null ? FileImage(_profileImage!) : null) as ImageProvider?, // Display the selected profile image if available, otherwise display the image from the URL if available
-                        child: _profileImageUrl == null && _profileImage == null ? const Icon(Icons.person, size: 55, color: Color(0xFF373A36)) : null,
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFA6192E),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.edit, size: 16, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20), 
-                Text(
-                  user?.email?.split('@')[0] ?? 'User', // Display the username (part of the email before '@') or 'User' if email is not available
-                  style: TextStyle(
-                    fontSize: 24, 
-                    fontWeight: FontWeight.bold,
-                    color:Color(0xFF373A36),
-                  ), 
-                ),
-            
-                const SizedBox(height: 5), 
+                // Profile header section (image + username + email)
+                ProfileHeader(
+                  profileImage: _profileImage,
+                  profileImageUrl: _profileImageUrl,
 
-                Text(
-                  user?.email ?? 'No email', // Display the user's email or 'No email' if email is not available
-                  style: TextStyle(fontSize: 16, color: Colors.grey), 
+                  username: user?.email?.split('@')[0] ?? 'User',
+
+                  email: user?.email ?? 'No email',
+
+                  onEditPhoto: _showImagePickerOptions,
                 ),
 
                 const SizedBox(height: 30), 
             
                 const Divider(),
+                // Listings section title
                 const Text (
                   "My Listings", 
                   style:TextStyle(
@@ -189,63 +199,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 const Divider(),
 
-                // User's listings
-                StreamBuilder<QuerySnapshot>(
+                // Real-time user listings from Firestore
+                StreamBuilder<List<ListingModel>>(
                   stream: FirestoreService().getUserListings(user!.uid),
-                  builder:(context, snapshot){
+                  builder: (context, snapshot){
                     if (snapshot.connectionState == ConnectionState.waiting){
                       return const Center(child: CircularProgressIndicator());
                     }
-                    if(!snapshot.hasData || snapshot.data!.docs.isEmpty){
+                    if(!snapshot.hasData || snapshot.data!.isEmpty){
                       return const Center(child: Text("No Listings yet"));
                     }
-                    final listings = snapshot.data!.docs;
+                    final listings = snapshot.data!;
 
+                    // Builds list of user's listings
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: listings.length,
                       itemBuilder: (context, index){
-                        final data = listings[index].data() as Map<String, dynamic>;
+                        final listing = listings[index];
                         return ProfileListingCard(
-                          title: data['title'] ?? '',
-                          price: data['price'] ?? '',
-                          category: data['category'] ?? '',
-                          imageUrl: data['imageUrl'],
+                          title: listing.title,
+                          price: listing.price,
+                          category: listing.category,
+                          imageUrl: listing.imageUrl,
 
+                          // Navigate to edit listing screen
                           onEdit: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => AddListingScreen(
-                                  docId: listings[index].id,
-                                  title: data['title'],
-                                  price: data['price'],
-                                  description: data['description'],
-                                  category: data['category'],
-                                  contact: data['contact'],
-                                  imageUrl: data['imageUrl'],
+                                  docId: listing.id,
+                                  title: listing.title,
+                                  price: listing.price,
+                                  description: listing.description,
+                                  category: listing.category,
+                                  contact: listing.contact,
+                                  imageUrl: listing.imageUrl,
                                 ),
                               ),
                             );
                           },
-                          onDelete: () async {
-                            final confirm = await showDialog(
-                              context: context,
-
-                              builder: (context) => const ConfirmationDialog(
-                                title: "Delete Listing",
-                                content: "Are you sure?",
-                                confirmText: "Delete",
-                              ),
-                            );
-
-                            if (confirm == true) {
-                              await FirestoreService().deleteListing(
-                                listings[index].id,
-                              );
-                            }
-                          },
+                          // Delete listing with confirmation
+                          onDelete:() => _deleteListing(listing.id),
                         ); 
                       },
                     );
