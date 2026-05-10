@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/user_profile_service.dart';
+import 'package:campushub/widgets/profile_listing_card.dart';
+import 'package:campushub/widgets/confirmation_dialog.dart';
 
 
 
@@ -90,138 +92,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final AuthService _authService = AuthService(); // Instance of the AuthService to handle authentication-related operations
   
-  Widget _buildProfileListingCard(String docId, Map<String, dynamic>data){
-    final imageUrl = data['imageUrl'] ?? '';
-    return Container(
-      constraints: const BoxConstraints(
-        minHeight: 120,
-      ),
-      margin: const EdgeInsets.only(bottom:12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: const Color(0xFFEDEBE5),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children:[
-          //Image placeholder
-          
-          Container(
-            height: 100,
-            width: 100,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: imageUrl != null && imageUrl != ''
-              ? ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              )
-            : const Icon(Icons.image),
-          ),
-          const SizedBox(width:12),
-
-          // title + price
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data['title'] ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF373A36),fontSize: 17),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "\$${data['price'] ?? ''}${(data['category'] ?? '').toString().toLowerCase() == 'service' ? '/hr' : ''}",
-                  style: const TextStyle(color:Color(0xFFA6192E), fontWeight: FontWeight.bold,fontSize:16),
-                ),
-              ],
-            ),
-          ),
-
-          // Actions - Edit and update 
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children:[
-              IconButton(
-                icon: const Icon(Icons.edit, color:Color(0xFF373A36)),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddListingScreen(
-                        docId: docId,
-                        title: data['title'],
-                        price: data['price'],
-                        description: data['description'],
-                        category: data['category'],
-                        contact: data['contact'],
-                        imageUrl: data['imageUrl'],
-                      ),
-                    ),
-                  );
-                }
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete, color:Color(0xFF373A36)),
-                onPressed:() async {
-                  final confirm = await showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      backgroundColor: const Color(0xFFF7F7F7),
-                      title: const Text(
-                        "Delete Listing"
-                      ),
-                      content: const Text(
-                        "Are you sure?"
-                      ),
-                      actions:[
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Cancel", style:TextStyle(color: Color(0xFF373A36))),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text(
-                            "Delete",
-                            style: TextStyle(
-                              color: Color(0xFFA6192E),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (confirm == true) {
-                    await FirestoreService().deleteListing(docId);
-                  }
-                }
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-  
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -239,29 +109,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               final confirmLogout = await showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  backgroundColor: const Color(0xFFF7F7F7),
-                  title: const Text("Logout"),
-                  content: const Text("Are you sure you want to logout?"),
-                  actions:[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        "Cancel",
-                        style:TextStyle(color: Color(0xFF373A36)),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text(
-                        "Logout", 
-                        style: TextStyle(
-                          color: Color(0xFFA6192E),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                builder: (context) => const ConfirmationDialog(
+                  title: "Logout",
+                  content: "Are you sure you want to logout?",
+                  confirmText: "Logout",
                 ),
               );
               if (confirmLogout == true) {
@@ -356,7 +207,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       itemCount: listings.length,
                       itemBuilder: (context, index){
                         final data = listings[index].data() as Map<String, dynamic>;
-                        return _buildProfileListingCard(listings[index].id, data); // Build a card for each listing with options to edit or delete
+                        return ProfileListingCard(
+                          title: data['title'] ?? '',
+                          price: data['price'] ?? '',
+                          category: data['category'] ?? '',
+                          imageUrl: data['imageUrl'],
+
+                          onEdit: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddListingScreen(
+                                  docId: listings[index].id,
+                                  title: data['title'],
+                                  price: data['price'],
+                                  description: data['description'],
+                                  category: data['category'],
+                                  contact: data['contact'],
+                                  imageUrl: data['imageUrl'],
+                                ),
+                              ),
+                            );
+                          },
+                          onDelete: () async {
+                            final confirm = await showDialog(
+                              context: context,
+
+                              builder: (context) => const ConfirmationDialog(
+                                title: "Delete Listing",
+                                content: "Are you sure?",
+                                confirmText: "Delete",
+                              ),
+                            );
+
+                            if (confirm == true) {
+                              await FirestoreService().deleteListing(
+                                listings[index].id,
+                              );
+                            }
+                          },
+                        ); 
                       },
                     );
                   },
