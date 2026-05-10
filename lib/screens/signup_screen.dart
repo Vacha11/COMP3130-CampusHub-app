@@ -1,8 +1,13 @@
 import 'package:campushub/screens/login_screen.dart';
+import 'package:campushub/widgets/auth_layout.dart';
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import 'package:campushub/services/auth_service.dart';
 import 'home_screen.dart';
+import 'package:campushub/widgets/app_label.dart';
+import 'package:campushub/widgets/app_text_fields.dart';
+import 'package:campushub/widgets/auth_header.dart';
 
+// Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
@@ -11,209 +16,173 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final TextEditingController _firstNameController = TextEditingController(); // Controller for first name input
-  final TextEditingController _lastNameController = TextEditingController(); // Controller for last name input
-  final TextEditingController _emailController = TextEditingController(); // Controller for email input
-  final TextEditingController _passwordController = TextEditingController(); // 
+  // Controllers for managing user input fields
+  final TextEditingController _firstNameController = TextEditingController(); 
+  final TextEditingController _lastNameController = TextEditingController(); 
+  final TextEditingController _emailController = TextEditingController(); 
+  final TextEditingController _passwordController = TextEditingController(); 
+
   final AuthService _authService = AuthService(); // Initialize the authentication service
+
+  bool _isLoading = false;
+
+  // Handle user sign up with Firebase Authentication
+  Future<void> _signup() async {
+    setState(() {
+      _isLoading = true;
+    });
+    // Retrieve and clean input values
+    String firstName = _firstNameController.text.trim();
+    String lastName = _lastNameController.text.trim();
+
+    String name = "$firstName $lastName".trim(); // Combine first and last name
+
+    String email = _emailController.text.trim(); 
+    String password = _passwordController.text.trim(); 
+    // Attempt to sign up the user with the provided email and password and name
+    var user = await _authService.signUp(email, password, name); 
+    setState(() {
+      _isLoading = false;
+    });
+    // Navigate to home screen if signup succeeds
+    if (user != null) { 
+      Navigator.pushReplacement( 
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
+    } else {
+      // Show error message if signup fails
+      ScaffoldMessenger.of(context).showSnackBar( 
+        const SnackBar(content: Text('Sign up failed. Please try again.')), // Show error message if sign-up fails
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [ 
-          Container( // Background container with white color
-            color:Colors.white
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container( // Decorative container at the bottom with a gradient background
-              height: 75,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors:[
-                    Color(0xFFD6001C), // bright red
-                    Color(0xFFA6192E), // red
-                    Color(0xFF76232F), // deep red
+    return AuthLayout(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height:30),
+          const AuthHeader(),
+          const SizedBox(height: 20), 
+          // First + last name fields displayed side-by-side
+          Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppLabel(text: "First Name"),
+                    const SizedBox(height: 8),
+                    AppTextField(
+                      controller: _firstNameController,
+                      hint: "First",
+                    ),
                   ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
                 ),
               ),
-            ),
-          ),
 
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal:40),
-                child: Column( // Main column containing the input fields and sign-up button
+              const SizedBox(width: 12),
+
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height:30),
-                    // Branding header
-                    Row(
-                      children: [
-                        Image.asset(
-                          "assets/images/lighthouse.png",
-                          height: 30,
-                          color: const Color(0xFFA6192E),
-                        ),
-                        SizedBox(height: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const[
-                            Text(
-                              "CampusHub",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontFamily: 'Work Sans',
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFA6192E), // red
-                              ),
-                            ),
-                            
-                            Text(
-                              "Buy, Sell, Connect",
-                              style: TextStyle(
-                                fontSize: 8,
-                                fontFamily: 'Work Sans',
-                                color: Color(0xFFA6192E), // red
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20), 
-                    Row(
-                      children:[
-                        Expanded(
-                          child: _buildInputField(label:"First Name", controller: _firstNameController), // First name input field
-                        ),
-                        const SizedBox(width:12),
-                        Expanded(
-                          child: _buildInputField(label:"Last Name", controller: _lastNameController), // Last name input field
-                        ),
-                      ],
-                    ),
-                    // Spacing between the name fields and the email field
-                    const SizedBox(height:20), 
-                    _buildInputField(label:"Email", controller: _emailController), // Email input field
-                    const SizedBox(height:20),
-                    _buildInputField(label:"Password", controller: _passwordController, obscureText:true), // Password input field with obscured text
-                    const SizedBox(height:30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton( // Sign-up button
-                        onPressed:() async {
-                          String firstName = _firstNameController.text.trim();
-                          String lastName = _lastNameController.text.trim();
-                          String name = "$firstName $lastName".trim(); // Combine first and last name
-                          String email = _emailController.text.trim(); 
-                          String password = _passwordController.text.trim(); 
-                          var user = await _authService.signUp(email, password, name); // Attempt to sign up the user with the provided email and password
-                          if (user != null) { 
-                            Navigator.pushReplacement( // Navigate to the home screen if sign-up is successful
-                              context,
-                              MaterialPageRoute(builder: (context) => const HomeScreen()),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar( 
-                              const SnackBar(content: Text('Sign up failed. Please try again.')), // Show error message if sign-up fails
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFA6192E), // red
-                          padding: const EdgeInsets.symmetric(vertical: 14), // button padding
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10), 
-                          ),
-                        ),
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    Column(
-                      children: [
-                        Center(
-                          child: const Text(
-                            "Already have an account?",
-                          ),
-                        ),
-                      ],
-                    ),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Log In",
-                          style: TextStyle(
-                            color: Color(0xFFA6192E),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                    const AppLabel(text: "Last Name"),
+                    const SizedBox(height: 8),
+                    AppTextField(
+                      controller: _lastNameController,
+                      hint: "Last",
                     ),
                   ],
                 ),
               ),
+            ],
+          ),
+
+          const SizedBox(height:20),
+
+          // Email field
+          const AppLabel(text: "Email"),
+          const SizedBox(height: 8),
+          AppTextField(
+            controller: _emailController,
+            hint: "Enter Email",
+          ),
+
+          const SizedBox(height: 20),
+
+          // Password field
+          const AppLabel(text: "Password"),
+          const SizedBox(height: 8),
+          AppTextField(
+            controller: _passwordController,
+            hint: "Enter Password",
+            obscureText: true,
+          ),
+
+          const SizedBox(height:20),
+
+          // Signup button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton( // Sign-up button
+              onPressed: _isLoading ? null : _signup,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA6192E), // red
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14), // button padding
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), 
+                ),
+              ),
+              child: _isLoading ? const CircularProgressIndicator(color: Colors.white) 
+              : const Text(
+                "Sign Up",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: "WorkSans",
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ), 
+          ),
+          const SizedBox(height: 10),
+
+          Column(
+            children: [
+              Center(
+                // Navigation prompt for existing users
+                child: Text(
+                  "Already have an account?",
+                ),
+              ),
+            ],
+          ),
+          Center(
+            child: TextButton(
+              // Navigate to login screen if existing user
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
+              child: const Text(
+                "Log In",
+                style: TextStyle(
+                  color: Color(0xFFA6192E),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
-
-  // Helper method to build input fields for the sign-up form
-  Widget _buildInputField({required String label, required TextEditingController controller, bool obscureText = false }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children:[
-        Text( // Label for the input field
-          label,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField( // Text field for user input
-          controller: controller,
-          obscureText: label == "password",
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.grey[200],
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 14,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
 }
