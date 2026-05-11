@@ -7,7 +7,8 @@ import 'package:campushub/widgets/auth/auth_layout.dart';
 import 'package:campushub/widgets/auth/auth_header.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthService authService;
+  const LoginScreen({super.key,required this.authService});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -18,8 +19,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Instance of the authentication service to handle login
-  final AuthService _authService = AuthService();
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService;
+  }
 
   // Track whether a login request is currently in progress
   bool _isLoading = false;

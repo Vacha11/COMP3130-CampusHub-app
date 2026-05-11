@@ -9,7 +9,7 @@ import 'package:campushub/widgets/auth/auth_header.dart';
 
 // Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {
-   final AuthService authService;
+  final AuthService authService;
   const SignupScreen({super.key, required this.authService});
 
   @override
@@ -176,7 +176,7 @@ void initState() {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const LoginScreen(),
+                    builder: (context) => LoginScreen(authService: _authService),
                   ),
                 );
               },

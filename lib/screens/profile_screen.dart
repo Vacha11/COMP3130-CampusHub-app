@@ -122,7 +122,7 @@ Future<void> _logoutUser() async {
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
-      builder: (context) => const LoginScreen(),
+      builder: (context) => LoginScreen(authService: _authService,),
     ),
   );
 }
