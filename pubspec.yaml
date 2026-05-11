@@ -43,6 +43,7 @@ dependencies:
   provider: ^6.1.2
 
 dev_dependencies:
+  firebase_auth_mocks: 0.15.1
   flutter_test:
     sdk: flutter
 

@@ -9,20 +9,28 @@ import 'package:campushub/widgets/auth/auth_header.dart';
 
 // Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+   final AuthService authService;
+  const SignupScreen({super.key, required this.authService});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+
+  late final AuthService _authService;
+
+@override
+void initState() {
+  super.initState();
+  _authService = widget.authService;
+}
+
   // Controllers for managing user input fields
   final TextEditingController _firstNameController = TextEditingController(); 
   final TextEditingController _lastNameController = TextEditingController(); 
   final TextEditingController _emailController = TextEditingController(); 
   final TextEditingController _passwordController = TextEditingController(); 
-
-  final AuthService _authService = AuthService(); // Initialize the authentication service
 
   bool _isLoading = false;
 
@@ -40,7 +48,7 @@ class _SignupScreenState extends State<SignupScreen> {
     String email = _emailController.text.trim(); 
     String password = _passwordController.text.trim(); 
     // Attempt to sign up the user with the provided email and password and name
-    var user = await _authService.signUp(email, password, name); 
+    var user = await _authService.signUp(email, password, name);
     setState(() {
       _isLoading = false;
     });

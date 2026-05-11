@@ -4,12 +4,13 @@ import 'dart:io';
 import 'package:campushub/models/listing_model.dart';
 
 class FirestoreService {
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore db;
+  FirestoreService({FirebaseFirestore? db}) : db = db ?? FirebaseFirestore.instance;
 
   // Add a new listing to Firestore with the provided listing data
   Future<void> addListing(Map<String, dynamic> listingData) async {
     try {
-      await _db.collection('listings').add(listingData); // Add a new listing to the 'listings' collection in Firestore
+      await db.collection('listings').add(listingData); // Add a new listing to the 'listings' collection in Firestore
     } catch (e) {
       print('Error adding listing: $e'); // Print an error message if there is an issue adding the listing
     }
@@ -17,12 +18,12 @@ class FirestoreService {
 
   // Update an existing listing in Firestore based on the document ID and the new data
   Future<void> updateListing(String docId, Map<String, dynamic> data) async {
-    await _db.collection('listings').doc(docId).update(data);
+    await db.collection('listings').doc(docId).update(data);
   }
 
   // Delete a listing from Firestore based on the document ID
   Future<void> deleteListing(String docId) async{
-    await _db.collection('listings').doc(docId).delete();
+    await db.collection('listings').doc(docId).delete();
   }
 
   // Upload an image to Firebase Storage and return the download URL
@@ -48,7 +49,7 @@ class FirestoreService {
   Future<List<DocumentSnapshot>> getFavouriteListings(List<String> ids) async {
     if (ids.isEmpty) return [];
     
-    final querySnapshot = await _db.collection('listings')
+    final querySnapshot = await db.collection('listings')
       .where(FieldPath.documentId, whereIn: ids)
       .get();
 
@@ -57,7 +58,7 @@ class FirestoreService {
   
   // Read all listings
   Stream<List<ListingModel>>getListings() { // Read all listings
-    return _db.collection('listings')
+    return db.collection('listings')
      .orderBy('createdAt', descending: true)
      .snapshots()
      .map((snapshot){
@@ -71,7 +72,7 @@ class FirestoreService {
   }
   // user specific listings
   Stream<List<ListingModel>> getUserListings(String userID){ // Read user specific listings
-    return _db.collection('listings')
+    return db.collection('listings')
       .where('userId', isEqualTo: userID)
       .snapshots()
       .map((snapshot){
@@ -90,7 +91,7 @@ class FirestoreService {
       return getListings();
     }
 
-    return _db
+    return db
       .collection('listings')
       .where('category', isEqualTo: category)
       .orderBy('createdAt', descending:true)
@@ -106,7 +107,7 @@ class FirestoreService {
   }
 
   Stream<List<ListingModel>> searchListings(String query){
-    return _db
+    return db
       .collection('listings')
       .orderBy('title')
       .startAt([query])

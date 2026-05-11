@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
+import 'package:campushub/services/auth_service.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -96,7 +97,7 @@ class SplashScreen extends StatelessWidget {
                 onPressed:(){ // navigate to signup screen on button press
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SignupScreen()), 
+                    MaterialPageRoute(builder: (context) => SignupScreen(authService: AuthService())), 
                   );
                 },
                 style: ElevatedButton.styleFrom(
