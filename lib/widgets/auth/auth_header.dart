@@ -28,7 +28,7 @@ class AuthHeader extends StatelessWidget {
               ),
             ),
             Text(
-              "Buy, Sell, Connect",
+              "Buy, Sell, Connect on Campus",
               style: TextStyle(
                 fontSize: 8,
                 color: Color(0xFFA6192E),
