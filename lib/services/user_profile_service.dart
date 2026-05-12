@@ -12,11 +12,8 @@ class UserProfileService {
       .ref()
       .child('profile_pictures')
       .child('$uid.jpg'); // store as uid.jpg for easy retrieval
-    print("START UPLOAD");
     await storageref.putFile(imageFile);
-    print("UPLOAD COMPLETE");
     final downloadURL = await storageref.getDownloadURL();
-    print("DOWNLOAD URL: $downloadURL");
     return downloadURL;
   }
 

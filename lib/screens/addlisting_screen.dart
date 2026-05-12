@@ -112,6 +112,23 @@ class _AddListingScreenState extends State<AddListingScreen> {
   // handles submit for create and edit listing
   void _submitListing() async {
     final category = selectedCategory == 0 ? "Item" : "Service";
+
+    if (titleController.text.isEmpty ||
+      descriptionController.text.isEmpty ||
+      priceController.text.isEmpty ||
+      contactController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all required fields")),
+      );
+      return;
+    }
+
+    if (selectedImage == null && widget.imageUrl == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select an image")),
+      );
+      return;
+    }
     
     // upload image if new image is selected
     final imageUrl = await _listingService.uploadListingImage(
@@ -287,6 +304,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
               AppTextField(
                 controller: contactController, 
                 hint: "Enter Contact Number",
+                keyboardType: TextInputType.number,
               ),
 
               const SizedBox(height: 15),

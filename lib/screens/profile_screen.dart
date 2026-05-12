@@ -48,6 +48,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _profileImage = file; 
       _profileImageUrl = imageUrl; 
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            source == ImageSource.camera
+            ? "Photo captured successfully"
+            : "Image selected from gallery",
+          ),
+          backgroundColor: const Color(0xFFA6192E),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
   }
 
   // Open bottom sheet for choosing image source (camera/gallery)
