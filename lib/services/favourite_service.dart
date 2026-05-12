@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'favourite_service_interface.dart';
 
-class FavouriteService {
+class FavouriteService implements FavouriteServiceInterface {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> toggleFavourites(String userId, String listingId) async {
