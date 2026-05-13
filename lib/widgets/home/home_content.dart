@@ -1,36 +1,45 @@
+import 'package:campushub/services/user_profile_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/screens/favourites_screen.dart';
 import 'package:campushub/screens/profile_screen.dart';
 import 'package:campushub/widgets/home/search_bar.dart';
 import 'package:campushub/widgets/home/category_tabs.dart';
 import 'package:campushub/widgets/listings/listing_view.dart';
+import 'package:campushub/services/firestore_service.dart';
+import 'package:campushub/services/auth_service.dart';
 
-class homeContent extends StatelessWidget {
+class HomeContent extends StatelessWidget {
   final int bottomIndex;
   final int categoryIndex;
   final String searchQuery;
   final Function(int) onCategoryChanged;
   final Function(String) onSearchChanged;
+  final FirestoreService firestoreService;
+  final AuthService authService;
+  final UserProfileServiceInterface profileService;
 
-  const homeContent({
+  const HomeContent({
     super.key,
     required this.bottomIndex,
     required this.categoryIndex,
     required this.searchQuery,
     required this.onCategoryChanged,
     required this.onSearchChanged,
+    required this.firestoreService,
+    required this.authService,
+    required this.profileService,
   });
 
   @override
   Widget build(BuildContext context) {
     // If user selects "Favourites" tab in bottom nav
     if (bottomIndex == 1) {
-      return const FavouritesScreen();
+      return FavouritesScreen(firestoreService: firestoreService,);
     }
 
     // If user selects "Profile" tab in bottom nav
     if (bottomIndex == 2) {
-      return const ProfileScreen();
+      return ProfileScreen(authService: authService,firestoreService: firestoreService,profileService: profileService);
     }
 
     // Default view = Home screen content

@@ -1,48 +1,54 @@
 import 'package:campushub/screens/addlisting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
-import 'package:campushub/services/firestore_service.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:campushub/services/user_profile_service.dart';
 import 'package:campushub/widgets/profile/profile_listing_card.dart';
 import 'package:campushub/widgets/common/confirmation_dialog.dart';
 import 'package:campushub/widgets/profile/profile_header.dart';
 import 'package:campushub/models/listing_model.dart';
+import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
 
 
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final FirestoreServiceInterface firestoreService;
+  final AuthService authService;
+  final UserProfileServiceInterface profileService;
+
+  const ProfileScreen({
+    super.key,
+    required this.firestoreService, 
+    required this.authService,
+    required this.profileService,
+  });
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-   final AuthService _authService = AuthService(); 
 
   // Stores locally selected profile image (from camera/gallery)
   File? _profileImage; 
   final ImagePicker _picker = ImagePicker(); 
 
-  // Service layer for handling profile image upload & Firestore updates
-  final UserProfileService _profileService = UserProfileService();
+
 
   // Uploads image to Firebase Storage and updates Firestore
   Future<void> _pickProfileImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source); 
     if (pickedFile == null) return; 
     final file = File (pickedFile.path); 
-    final user = FirebaseAuth.instance.currentUser; 
+    final user = widget.authService.currentUser;
     if(user == null) return;
-    final url = await _profileService.uploadProfilePicture(file, user.uid); 
+    final url = await widget.profileService.uploadProfilePicture(file, user.uid); 
     
-    await _profileService.saveProfileImageUrl(user.uid, url); 
+    await widget.profileService.saveProfileImageUrl(user.uid, url); 
 
-    final imageUrl = await _profileService.getProfileImageUrl(user.uid); 
+    final imageUrl = await widget.profileService.getProfileImageUrl(user.uid); 
 
     setState(() {
       _profileImage = file; 
@@ -102,9 +108,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // Fetche existing profile image URL from Firestore
   Future<void> _loadProfileImage() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = widget.authService.currentUser;
     if(user == null) return;
-    final url = await _profileService.getProfileImageUrl(user.uid); // Get the profile image URL from Firestore for the current user
+    final url = await widget.profileService.getProfileImageUrl(user.uid); // Get the profile image URL from Firestore for the current user
     setState(() {
       _profileImageUrl = url; // Update the state with the retrieved profile image URL to display it in the UI
     });
@@ -128,13 +134,16 @@ Future<void> _logoutUser() async {
   if (confirmLogout != true) return;
 
   // Sign out the current user
-  await _authService.signOut();
+  await widget.authService.signOut();
 
   // Navigate back to login screen
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
-      builder: (context) => LoginScreen(authService: _authService,),
+      builder: (context) => LoginScreen(
+        authService: widget.authService,
+        profileService: widget.profileService
+      ),
     ),
   );
 }
@@ -157,12 +166,12 @@ Future<void> _deleteListing(String docId) async {
   if (confirm != true) return;
 
   // Delete listing from Firestore
-  await FirestoreService().deleteListing(docId);
+  await widget.firestoreService.deleteListing(docId);
 }
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = widget.authService.currentUser;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
@@ -180,7 +189,7 @@ Future<void> _deleteListing(String docId) async {
       ),
       // Main profile screen content
       body: SafeArea(
-        child: SingleChildScrollView(
+        child:user == null ? const Center(child: Text("Not logged in")) : SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Column(        
@@ -213,7 +222,7 @@ Future<void> _deleteListing(String docId) async {
 
                 // Real-time user listings from Firestore
                 StreamBuilder<List<ListingModel>>(
-                  stream: FirestoreService().getUserListings(user!.uid),
+                  stream: widget.firestoreService.getUserListings(user.uid),
                   builder: (context, snapshot){
                     if (snapshot.connectionState == ConnectionState.waiting){
                       return const Center(child: CircularProgressIndicator());

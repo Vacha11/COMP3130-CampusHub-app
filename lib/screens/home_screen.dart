@@ -3,9 +3,16 @@ import 'addlisting_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:campushub/widgets/home/home_content.dart';
+import 'package:campushub/services/firestore_service.dart';
+import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final FirestoreService firestoreService;
+  final AuthService authService;
+  final UserProfileServiceInterface profileService;
+
+  const HomeScreen({super.key, required this.firestoreService,required this.authService,required this.profileService});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
     // Load the user's favourite listings when the home screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider =
-        Provider.of<FavouriteProvider?>(context, listen: false);
-      provider?.loadFavourites();
+        Provider.of<FavouriteProvider>(context, listen: false);
+      provider.loadFavourites();
     });
   }
 
@@ -37,7 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
       // Main dynamic body controlled by bottom navigation state
-      body: homeContent(
+      body: HomeContent(
+        firestoreService: widget.firestoreService,
+        authService: widget.authService,
+        profileService: widget.profileService,
         bottomIndex: bottomIndex, 
         categoryIndex: categoryIndex, 
         searchQuery: searchQuery, 

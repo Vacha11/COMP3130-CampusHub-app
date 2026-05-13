@@ -6,11 +6,14 @@ import 'home_screen.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/widgets/auth/auth_header.dart';
+import 'package:campushub/services/firestore_service.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
 
 // Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {
   final AuthService authService;
-  const SignupScreen({super.key, required this.authService});
+  final UserProfileServiceInterface profileService;
+  const SignupScreen({super.key, required this.authService,required this.profileService});
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -56,7 +59,12 @@ void initState() {
     if (user != null) { 
       Navigator.pushReplacement( 
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen(
+          firestoreService: FirestoreService(),
+          authService: widget.authService,
+          profileService: widget.profileService,
+          ),
+        ),
       );
     } else {
       // Show error message if signup fails
@@ -176,7 +184,10 @@ void initState() {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginScreen(authService: _authService),
+                    builder: (context) => LoginScreen(
+                      authService: _authService,
+                      profileService: widget.profileService,
+                    ),
                   ),
                 );
               },

@@ -5,10 +5,13 @@ import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/auth/auth_layout.dart';
 import 'package:campushub/widgets/auth/auth_header.dart';
+import 'package:campushub/services/firestore_service.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
-  const LoginScreen({super.key,required this.authService});
+  final UserProfileServiceInterface profileService;
+  const LoginScreen({super.key,required this.authService,required this.profileService});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -52,10 +55,14 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     // If login is successful, navigate to the home screen
     if (user != null) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (context) => HomeScreen(
+            firestoreService: FirestoreService(),
+            authService: widget.authService,
+            profileService: widget.profileService,
+          ),
         ),
       );
     } else {

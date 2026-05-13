@@ -10,6 +10,12 @@ class FavouriteProvider extends ChangeNotifier {
     required this.favouriteService,
     required this.auth,
   });
+
+  FavouriteProvider.test({
+    required this.favouriteService,
+    required List<String> initialFavourites,
+  })  : auth = _FakeAuth(),
+        favouriteIds = initialFavourites;
   
   List<String> favouriteIds = []; // List to store the IDs of favourite listings
 
@@ -39,4 +45,19 @@ class FavouriteProvider extends ChangeNotifier {
   bool isFavourite(String listingId) {
     return favouriteIds.contains(listingId); 
   }
+}
+
+class _FakeAuth implements FirebaseAuth {
+  @override
+  User? get currentUser => _FakeUser();
+
+  // we ignore all other FirebaseAuth methods safely
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeUser implements User {
+  @override
+  String get uid => "test-user";
+
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -3,6 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:campushub/screens/login_screen.dart';
 import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
+
+class FakeProfileService implements UserProfileServiceInterface {
+  @override
+  Future<String?> getProfileImageUrl(String uid) async => null;
+
+  @override
+  Future<void> saveProfileImageUrl(String uid, String url) async {}
+
+  @override
+  Future<String> uploadProfilePicture(file, uid) async => '';
+}
 
 void main() {
   // Test 1: check UI renders
@@ -17,7 +29,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: LoginScreen(authService: authService),
+        home: LoginScreen(authService: authService,profileService: FakeProfileService()),
       ),
     );
 
@@ -43,7 +55,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        home: LoginScreen(authService: authService),
+        home: LoginScreen(authService: authService,profileService: FakeProfileService(),),
       ),
     );
 

@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:campushub/models/listing_model.dart';
+import 'package:campushub/services/firestore_service.dart';
 
 class FavouritesScreen extends StatefulWidget {
-  const FavouritesScreen({super.key});
+  final FirestoreService firestoreService;
+
+  const FavouritesScreen({super.key,required this.firestoreService});
 
   @override
   State<FavouritesScreen> createState() => _FavouritesScreenState();
@@ -29,16 +31,16 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
       );
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('listings').snapshots(),
+    return StreamBuilder<List<ListingModel>>(
+      stream: widget.firestoreService.getListings(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // Filter only favourited listings
-        final listings = snapshot.data!.docs.where((doc) {
-          return favouriteIds.contains(doc.id);
+        final listings = snapshot.data!.where((listing) {
+          return favouriteIds.contains(listing.id);
         }).toList();
 
         return Padding(
@@ -66,10 +68,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                   itemCount: listings.length,
                   itemBuilder: (context, index) {
                     // Convert Firestore document into ListingModel
-                    final listing = ListingModel.fromMap(
-                      listings[index].id,
-                      listings[index].data() as Map<String, dynamic>,
-                    );
+                    final listing = listings[index];
 
                     return ListingCard(
                       title: listing.title,

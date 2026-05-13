@@ -6,6 +6,9 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'services/favourite_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:campushub/services/user_profile_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +36,10 @@ class MyApp extends StatelessWidget {
         fontFamily: "WorkSans",
       ),
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: SplashScreen(profileService: UserProfileService(
+        firestore: FirebaseFirestore.instance,
+        storage: FirebaseStorage.instance,
+      )),
     );
   }
 }

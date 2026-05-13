@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
 import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/user_profile_service_interface.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+  final UserProfileServiceInterface profileService;
+
+  const SplashScreen({super.key, required this.profileService});
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +100,10 @@ class SplashScreen extends StatelessWidget {
                 onPressed:(){ // navigate to signup screen on button press
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SignupScreen(authService: AuthService())), 
+                    MaterialPageRoute(builder: (context) => SignupScreen(
+                      authService: AuthService(),
+                      profileService: profileService,
+                    )), 
                   );
                 },
                 style: ElevatedButton.styleFrom(
