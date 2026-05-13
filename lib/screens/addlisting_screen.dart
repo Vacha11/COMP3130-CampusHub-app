@@ -4,9 +4,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/listing_service.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
+import 'package:campushub/services/listing_service_interface.dart';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
+
+  final ListingServiceInterface? listingService;
+
   // This screen acts as both create + edit screen 
   final String? docId;
   final String? title;
@@ -25,6 +29,7 @@ class AddListingScreen extends StatefulWidget {
     this.category,
     this.contact,
     this.imageUrl,
+    this.listingService,
   });
 
   @override
@@ -43,7 +48,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
   
   final ImagePicker picker = ImagePicker();
   // listing service handles Firestore and image upload logic
-  final ListingService _listingService = ListingService();
+  late final ListingServiceInterface _listingService;
 
   // Tracks selected category (Item,Service)
   int selectedCategory = 0;
@@ -60,6 +65,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
  @override
  void initState(){
   super.initState();
+
+  _listingService = widget.listingService ?? ListingService();
 
   // prefill data when editing and existing listing
   titleController.text = widget.title ?? '';

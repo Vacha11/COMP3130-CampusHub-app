@@ -2,9 +2,15 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campushub/services/firestore_service.dart';
+import 'listing_service_interface.dart';
 
-class ListingService {
-  final FirestoreService _firestoreService = FirestoreService();
+class ListingService implements ListingServiceInterface {
+  final FirestoreService _firestoreService;
+  final FirebaseAuth _auth;
+
+  ListingService({FirestoreService? firestoreService,FirebaseAuth? auth})
+    : _firestoreService = firestoreService ?? FirestoreService(),
+      _auth = auth ?? FirebaseAuth.instance;
 
   // upload new image if selected else reuse existing image if editing listing
   Future<String?> uploadListingImage(File? imageFile, String? existingUrl) async {
@@ -24,7 +30,7 @@ class ListingService {
     required String contact,
     required String? imageUrl,
   }) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = _auth.currentUser;
 
     //listing scheme stored in Firestore
     // also includes metadata for filtering, user ownership and display
