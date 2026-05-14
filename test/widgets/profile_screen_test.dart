@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
-
 import 'package:campushub/screens/profile_screen.dart';
 import 'package:campushub/services/auth_service.dart';
 import 'package:campushub/models/listing_model.dart';
 import 'package:campushub/services/firestore_service_interface.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import '../fakes/fake_profile_service.dart';
 
 // fake firestore
 class FakeFirestoreService implements FirestoreServiceInterface {
@@ -15,24 +14,16 @@ class FakeFirestoreService implements FirestoreServiceInterface {
   FakeFirestoreService(this.listings);
 
   @override
+  Stream<List<ListingModel>> getListings() {
+    return Stream.value(listings);
+  }
+
   Stream<List<ListingModel>> getUserListings(String uid) {
     return Stream.value(listings);
   }
 
   @override
   Future<void> deleteListing(String docId) async {}
-}
-
-// fake profile service
-class FakeProfileService implements UserProfileServiceInterface {
-  @override
-  Future<String?> getProfileImageUrl(String uid) async => null;
-
-  @override
-  Future<void> saveProfileImageUrl(String uid, String url) async {}
-
-  @override
-  Future<String> uploadProfilePicture(file, uid) async => '';
 }
 
 

@@ -1,15 +1,15 @@
+import 'package:campushub/services/firestore_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'addlisting_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:campushub/widgets/home/home_content.dart';
-import 'package:campushub/services/firestore_service.dart';
-import 'package:campushub/services/auth_service.dart';
 import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/auth_service_interface.dart';
 
 class HomeScreen extends StatefulWidget {
-  final FirestoreService firestoreService;
-  final AuthService authService;
+  final FirestoreServiceInterface firestoreService;
+  final AuthServiceInterface authService;
   final UserProfileServiceInterface profileService;
 
   const HomeScreen({super.key, required this.firestoreService,required this.authService,required this.profileService});

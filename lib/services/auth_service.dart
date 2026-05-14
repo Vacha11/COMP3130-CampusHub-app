@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'auth_service_interface.dart';
 
-class AuthService {
+class AuthService implements AuthServiceInterface {
   final FirebaseAuth _auth;
 
   AuthService({FirebaseAuth? auth}) : _auth = auth ?? FirebaseAuth.instance;

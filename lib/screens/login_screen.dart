@@ -1,6 +1,6 @@
 import 'package:campushub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/auth_service_interface.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/auth/auth_layout.dart';
@@ -9,7 +9,7 @@ import 'package:campushub/services/firestore_service.dart';
 import 'package:campushub/services/user_profile_service_interface.dart';
 
 class LoginScreen extends StatefulWidget {
-  final AuthService authService;
+  final AuthServiceInterface authService;
   final UserProfileServiceInterface profileService;
   const LoginScreen({super.key,required this.authService,required this.profileService});
 
@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  late final AuthService _authService;
+  late final AuthServiceInterface _authService;
 
   @override
   void initState() {

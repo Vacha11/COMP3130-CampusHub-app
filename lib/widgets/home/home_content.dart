@@ -1,3 +1,4 @@
+import 'package:campushub/services/firestore_service_interface.dart';
 import 'package:campushub/services/user_profile_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/screens/favourites_screen.dart';
@@ -5,8 +6,7 @@ import 'package:campushub/screens/profile_screen.dart';
 import 'package:campushub/widgets/home/search_bar.dart';
 import 'package:campushub/widgets/home/category_tabs.dart';
 import 'package:campushub/widgets/listings/listing_view.dart';
-import 'package:campushub/services/firestore_service.dart';
-import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/auth_service_interface.dart';
 
 class HomeContent extends StatelessWidget {
   final int bottomIndex;
@@ -14,8 +14,8 @@ class HomeContent extends StatelessWidget {
   final String searchQuery;
   final Function(int) onCategoryChanged;
   final Function(String) onSearchChanged;
-  final FirestoreService firestoreService;
-  final AuthService authService;
+  final FirestoreServiceInterface firestoreService;
+  final AuthServiceInterface authService;
   final UserProfileServiceInterface profileService;
 
   const HomeContent({
@@ -34,7 +34,7 @@ class HomeContent extends StatelessWidget {
   Widget build(BuildContext context) {
     // If user selects "Favourites" tab in bottom nav
     if (bottomIndex == 1) {
-      return FavouritesScreen(firestoreService: firestoreService,);
+      return FavouritesScreen(firestoreService: firestoreService);
     }
 
     // If user selects "Profile" tab in bottom nav
@@ -79,6 +79,8 @@ class HomeContent extends StatelessWidget {
           child: ListingsView(
             categoryIndex: categoryIndex,
             searchQuery: searchQuery,
+            firestoreService: firestoreService,
+            authService: authService,
           ),
         ),
       ],

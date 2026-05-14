@@ -1,13 +1,13 @@
+import 'package:campushub/services/firestore_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:campushub/models/listing_model.dart';
-import 'package:campushub/services/firestore_service.dart';
 
 class FavouritesScreen extends StatefulWidget {
-  final FirestoreService firestoreService;
+  final FirestoreServiceInterface firestoreService;
 
   const FavouritesScreen({super.key,required this.firestoreService});
 

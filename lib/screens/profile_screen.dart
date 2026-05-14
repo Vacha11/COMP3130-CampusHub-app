@@ -1,6 +1,6 @@
 import 'package:campushub/screens/addlisting_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:campushub/services/auth_service.dart';
+import 'package:campushub/services/auth_service_interface.dart';
 import 'login_screen.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +15,7 @@ import 'package:campushub/services/user_profile_service_interface.dart';
 
 class ProfileScreen extends StatefulWidget {
   final FirestoreServiceInterface firestoreService;
-  final AuthService authService;
+  final AuthServiceInterface authService;
   final UserProfileServiceInterface profileService;
 
   const ProfileScreen({

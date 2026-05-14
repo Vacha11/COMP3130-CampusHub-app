@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:campushub/services/firestore_service.dart';
+import 'package:campushub/services/firestore_service_interface.dart';
 import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campushub/models/listing_model.dart';
+import 'package:campushub/services/auth_service_interface.dart';
 
 class ListingsView extends StatefulWidget {
   final int categoryIndex;
   final String searchQuery;
+  final FirestoreServiceInterface firestoreService;
+  final AuthServiceInterface authService;
 
   ListingsView({
     super.key,
     required this.categoryIndex,
     required this.searchQuery,
+    required this.firestoreService,
+    required this.authService,
   });
 
   @override
@@ -20,15 +24,13 @@ class ListingsView extends StatefulWidget {
 }
 
 class _ListingsViewState extends State<ListingsView> {
-  final FirestoreService _firestoreService = FirestoreService();
-
-  final user = FirebaseAuth.instance.currentUser;
 
 
   @override
   Widget build(BuildContext context) {
+
     return StreamBuilder<List<ListingModel>>(
-      stream: _firestoreService.getListings(),
+      stream: widget.firestoreService.getListings(),
 
       builder: (context, snapshot) {
         // loading state
