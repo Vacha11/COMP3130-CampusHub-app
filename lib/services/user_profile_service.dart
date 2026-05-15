@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'user_profile_service_interface.dart';
+import 'package:flutter/foundation.dart';
 
 class UserProfileService implements UserProfileServiceInterface {
   final FirebaseFirestore firestore;
@@ -13,12 +15,21 @@ class UserProfileService implements UserProfileServiceInterface {
   });
 
   // upload profile picture to Firebase Storage and return the download URL
-  Future<String> uploadProfilePicture(File imageFile, String uid) async {
+  Future<String> uploadProfilePicture(XFile imageFile, String uid) async {
     final storageref = storage
       .ref()
       .child('profile_pictures')
       .child('$uid.jpg'); // store as uid.jpg for easy retrieval
-    await storageref.putFile(imageFile);
+
+    if(kIsWeb){
+      // Web: use bytes
+      final bytes = await imageFile.readAsBytes();
+      await storageref.putData(bytes);
+    } else {
+      // Mobile: use File
+      final file = File(imageFile.path);
+      await storageref.putFile(file);
+    }
     final downloadURL = await storageref.getDownloadURL();
     return downloadURL;
   }

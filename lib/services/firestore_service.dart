@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import 'package:campushub/models/listing_model.dart';
 import 'firestore_service_interface.dart';
+import 'dart:typed_data';
 
 class FirestoreService implements FirestoreServiceInterface {
   final FirebaseFirestore db;
@@ -28,7 +28,7 @@ class FirestoreService implements FirestoreServiceInterface {
   }
 
   // Upload an image to Firebase Storage and return the download URL
-  Future<String?> uploadImage(File image) async {
+  Future<String?> uploadImage(Uint8List imageBytes, String fileName) async {
     try{
       final fileName = DateTime.now().millisecondsSinceEpoch.toString(); // Generate a unique filename based on the current timestamp
 
@@ -37,7 +37,7 @@ class FirestoreService implements FirestoreServiceInterface {
         .child('listing_images')
         .child('$fileName.jpg'); // Create a reference to the location in Firebase Storage where the image will be stored
 
-        await ref.putFile(image);
+        await ref.putData(imageBytes);
 
         return await ref.getDownloadURL();
     } catch (e){

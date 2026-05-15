@@ -19,6 +19,26 @@ class ListingDetailScreen extends StatefulWidget {
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
+  Widget buildSafeImage(String? url) {
+    if (url == null || url.isEmpty) {
+      return Container(
+        color: Colors.grey[300],
+        child: const Icon(Icons.image, size: 60, color: Colors.grey),
+      );
+    }
+
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: Colors.grey[300],
+          child: const Icon(Icons.broken_image, size: 60),
+        );
+      },
+    );
+  }
+
   // reusable UI builder for details sections (description, seller, contact)
   Widget _sectionCard({
     required String title,
@@ -101,33 +121,17 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             ],
 
             flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
+              background:
                   // hero animation for a smoother image transition
                   Hero(
                     tag: widget.docId,
-                    child: imageUrl != null
-                        ? Image.network(imageUrl, fit: BoxFit.cover)
-                        : Container(color: Colors.grey[300]),
+                    child: buildSafeImage(widget.listing.imageUrl),
                   ),
-
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [
-                          Colors.black.withOpacity(0.6),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                
+                
               ),
             ),
-          ),
+          
 
           // Main details section
           SliverToBoxAdapter(

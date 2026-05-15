@@ -56,7 +56,7 @@ class ListingCard extends StatelessWidget {
                   color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: imageUrl != null
+                child: (imageUrl != null && imageUrl!.isNotEmpty)
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
@@ -64,6 +64,15 @@ class ListingCard extends StatelessWidget {
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: 140,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 50,
+                                color: Color(0xFF373A36),
+                              ),
+                            );
+                          },
                         ),
                       )
                     : const Icon(Icons.image, size: 50, color: Color(0xFF373A36)),

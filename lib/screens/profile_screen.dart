@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:campushub/services/auth_service_interface.dart';
 import 'login_screen.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/widgets/profile/profile_listing_card.dart';
 import 'package:campushub/widgets/common/confirmation_dialog.dart';
@@ -32,7 +33,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
 
   // Stores locally selected profile image (from camera/gallery)
-  File? _profileImage; 
+  XFile? _profileImage; 
+  Uint8List? _webImage;
   final ImagePicker _picker = ImagePicker(); 
 
 
@@ -41,18 +43,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _pickProfileImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source); 
     if (pickedFile == null) return; 
-    final file = File (pickedFile.path); 
+
     final user = widget.authService.currentUser;
+
     if(user == null) return;
-    final url = await widget.profileService.uploadProfilePicture(file, user.uid); 
+    final url = await widget.profileService.uploadProfilePicture(pickedFile, user.uid); 
     
     await widget.profileService.saveProfileImageUrl(user.uid, url); 
 
     final imageUrl = await widget.profileService.getProfileImageUrl(user.uid); 
 
-    setState(() {
-      _profileImage = file; 
-      _profileImageUrl = imageUrl; 
+    setState(() async {
+      _profileImage = pickedFile; 
+      _profileImageUrl = imageUrl;
+
+      // web support
+      if (kIsWeb) {
+        _webImage = await pickedFile.readAsBytes();
+      } 
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -196,12 +204,12 @@ Future<void> _deleteListing(String docId) async {
               children: [
                 // Profile header section (image + username + email)
                 ProfileHeader(
-                  profileImage: _profileImage,
+                  profileImage: _profileImage == null ? null : File(_profileImage!.path),
                   profileImageUrl: _profileImageUrl,
 
-                  username: user?.email?.split('@')[0] ?? 'User',
+                  username: user.email?.split('@')[0] ?? 'User',
 
-                  email: user?.email ?? 'No email',
+                  email: user.email ?? 'No email',
 
                   onEditPhoto: _showImagePickerOptions,
                 ),

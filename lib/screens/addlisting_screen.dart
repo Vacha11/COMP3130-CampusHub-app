@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/listing_service.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/services/listing_service_interface.dart';
+import 'dart:typed_data';
 
 // Screen where users can create a new marketplace listing
 class AddListingScreen extends StatefulWidget {
@@ -44,7 +44,8 @@ class _AddListingScreenState extends State<AddListingScreen> {
   final TextEditingController contactController = TextEditingController();
 
   // store the selected image first 
-  File? selectedImage;
+  XFile? selectedImage;
+  Uint8List? selectedImageBytes;
   
   final ImagePicker picker = ImagePicker();
   // listing service handles Firestore and image upload logic
@@ -140,6 +141,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
     // upload image if new image is selected
     final imageUrl = await _listingService.uploadListingImage(
       selectedImage,
+      selectedImageBytes,
       widget.imageUrl,
     );
 
@@ -161,22 +163,26 @@ class _AddListingScreenState extends State<AddListingScreen> {
   Future<void> selectImage(ImageSource source) async{
     final selectedFile = await picker.pickImage(source: source);
 
-    if(selectedFile != null){
-      setState(() {
-        selectedImage = File(selectedFile.path);
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            source == ImageSource.camera
-            ? "Photo captured successfully"
-            : "Image selected from gallery",
-          ),
-          backgroundColor: const Color(0xFFA6192E),
-          behavior: SnackBarBehavior.floating,
+    if (selectedFile == null) return;
+
+    final bytes = await selectedFile.readAsBytes();
+
+    setState(() {
+      selectedImage = selectedFile;
+      selectedImageBytes = bytes;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          source == ImageSource.camera
+          ? "Photo captured successfully"
+          : "Image selected from gallery",
         ),
-      );
-    }
+        backgroundColor: const Color(0xFFA6192E),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   void _showImagePickerOptions() {
@@ -281,14 +287,10 @@ class _AddListingScreenState extends State<AddListingScreen> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFFEDEBE5)),
                   ),
-                  child: selectedImage != null ? ClipRRect(
-
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.file(
-                      selectedImage!,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
+                  child: selectedImage != null ? Image.memory(
+                    selectedImageBytes!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
                   )
                   : const Center(
                       child: Column(

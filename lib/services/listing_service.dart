@@ -1,8 +1,10 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campushub/services/firestore_service.dart';
 import 'listing_service_interface.dart';
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ListingService implements ListingServiceInterface {
   final FirestoreService _firestoreService;
@@ -13,11 +15,23 @@ class ListingService implements ListingServiceInterface {
       _auth = auth ?? FirebaseAuth.instance;
 
   // upload new image if selected else reuse existing image if editing listing
-  Future<String?> uploadListingImage(File? imageFile, String? existingUrl) async {
-    if (imageFile != null) {
-      return await _firestoreService.uploadImage(imageFile);
+  Future<String?> uploadListingImage(XFile? imageFile, Uint8List? imageBytes, String? existingUrl) async {
+    if (imageFile == null && imageBytes == null) {
+      return existingUrl;
     }
-    return existingUrl;
+
+    final ref = FirebaseStorage.instance
+      .ref()
+      .child('listing_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    
+    if (imageBytes != null) {
+      await ref.putData(imageBytes);
+      return await ref.getDownloadURL();
+    }
+
+    final bytes = await imageFile!.readAsBytes();
+    await ref.putData(bytes);
+    return await ref.getDownloadURL();
   }
 
   // Create or update listing

@@ -1,9 +1,13 @@
-import 'dart:io';
+
+import 'dart:typed_data';
+import 'package:image_picker/image_picker.dart';
+
 
 abstract class ListingServiceInterface {
 
   Future<String?> uploadListingImage(
-    File? imageFile,
+    XFile? imageFile,
+    Uint8List? imageBytes,
     String? existingUrl,
   );
 
