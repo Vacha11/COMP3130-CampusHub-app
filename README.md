@@ -7,13 +7,20 @@ Unlike Facebook marketplace and other traditional market places, CampusHub is de
 
 This app allows users to create listings, browse items and services, search by category, view seller details and save favourites for later. With inetgrated authentication and cloud storage, CampusHub provides a seamless and responsive user experience across devices. 
 
+## Project Objectives
+The goal of Campushub is to create a dedicated marketplace which:
+- Fosters student-to-student interaction
+- Simplify buying and selling within univeristy campus
+- Provide a secure and authenticated platform
+- Offer real time updates and a smooth experience
+
 ## Key Features
 ### User Authentication
 - Sign up and login using Firebase Authentication
 - Secure email and password authentication
 - Each user has an unique identity linked to their listings
 
-### Listings
+### Listings (Full CRUD System)
 - Create Listings with following information:
   - Title
   - Description
@@ -21,9 +28,9 @@ This app allows users to create listings, browse items and services, search by c
   - Category (item/service)
   - Contact details
   - Image upload
-- Read: view listings in real-time
+- Read: view listings in real-time using Firestore streams
 - Update: edit existing listings
-- Delete: remove listings
+- Delete: remove listings when no longer needed
 
 ### Search & Filtering
 - Search listings by title
@@ -42,9 +49,53 @@ This app allows users to create listings, browse items and services, search by c
   - Camera
   - Gallery
 - Images stored securely on Firebase Storage
+- Supports cross platform rendering (mobile and web handling included)
 
 ### Seller information
 - listings display seller name
-- Linked to Firebase user profile
+- Linked to Firebase authenticated user profile
 
-## Users
+## Target Users
+CampusHub is designed specifically for university students as the primary user group. This app's focus is affordability, convenience and trust within a closed academic community.
+### Student Buyers
+- Students who need affordable textbooks, laptops, or other second-hand items
+- These studnets make use of CampusHub to save money and find local deals within the campus quickly
+### Student Sellers
+- Students who want to sell their unused books, or furniture (students living on campus), electronics
+- These students make use of CampusHub to reach other students who may requires these items without having to go through multiple marketplaces
+### Student Service Providers
+- Students who want to offer services to other students in their free time such as tutoring, photography, freelancing
+- Make use of CampusHub to advertise services on campus
+### Why Users will choose CampusHub:
+- Items and services offered are more relevant for the users than public marketplaces
+- Safer due to student-only environment
+- Simple can clean mobile interface
+
+## Technical Details
+### Project Structure
+- '/screens': this folder consists of codes for all screens (UI pages)
+- '/services': this folder holds firebase logic (Firestore and Storage)
+- '/models': This folder has data models (listing model specifically)
+- '/providers': handles statement management for favourites
+- '/widgets': Reusable UI components
+
+This architecture separates UI, logic, and data layers for maintainability.
+
+### Test Login Details
+For testing purpose, following credentials can be used:
+
+- Email: testuser@email.com 
+- Password: password123  
+
+## Future Improvements
+- In-app chat feature
+- Push notifications
+- User Profile Pages with ratings
+- Admin moderation system
+
+## Known Issues / Limitations
+- Firebase Storage requires CORS configuration for web support 
+- No direct messaging system between users yet
+
+## Summary
+CampusHub is a lightwieght but scalable mobile marketplace app designed specifically for university students using Flutter and Firebase. It demonstrates full CRUD operations, authentication, cloud storage integration, and real-time database usage in student focused environment. 

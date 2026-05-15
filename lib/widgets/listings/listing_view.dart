@@ -68,8 +68,15 @@ class _ListingsViewState extends State<ListingsView> {
           return const Center(child: Text("No listings in this category"));
         }
 
-        return ListView.builder(
+        return GridView.builder(
+          padding: const EdgeInsets.all(12),
           itemCount: listings.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.75,
+          ),
           itemBuilder: (context, index) {
             final listing = listings[index];
 
