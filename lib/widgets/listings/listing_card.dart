@@ -83,7 +83,7 @@ class ListingCard extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color:  Color(0xFF373A36),
               ),
@@ -96,7 +96,7 @@ class ListingCard extends StatelessWidget {
                 Text(
                   formattedPrice,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 14,
                     color: Color(0xFFA6192E),
                     fontWeight: FontWeight.w600,
                   ),

@@ -208,17 +208,6 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
                   const SizedBox(height: 25),
 
-                  // description
-                  _sectionCard(
-                    title: "Description",
-                    child: Text(
-                      description,
-                      style: const TextStyle(height: 1.5, fontSize: 15),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
                   // Seller name
                   _sectionCard(
                     title: "Seller",
@@ -251,6 +240,16 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                     child: Text(
                       contact,
                       style: const TextStyle(fontSize: 15),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // description
+                  _sectionCard(
+                    title: "Description",
+                    child: Text(
+                      description,
+                      style: const TextStyle(height: 1.5, fontSize: 15),
                     ),
                   ),
 

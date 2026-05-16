@@ -77,7 +77,7 @@ class _ListingsViewState extends State<ListingsView> {
             maxCrossAxisExtent: 250, // responsive column width
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            childAspectRatio: 0.6,
+            childAspectRatio: 0.55,
           ),
           itemBuilder: (context, index) {
             final listing = listings[index];

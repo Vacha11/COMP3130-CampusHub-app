@@ -94,8 +94,6 @@ New user account can also be created.
 ### Platform Testing
 The application was developed and primarily tested on an **iOS Simulator (MacBook environment)**.
 
-Due to development environment constraints (no Android Studio setup), full Android emulator testing was not completed. However, the application is built using Flutter’s cross-platform framework, ensuring compatibility across both iOS and Android devices.
-
 ### Image Handling (Web vs Mobile)
 Image selection and handling differ between web and mobile platforms. On mobile devices, images are handled using file-based access (`dart:io File`). On web, images are handled in-memory using `Uint8List` due to browser restrictions on file system access.
 
