@@ -18,8 +18,7 @@ class UserProfileService implements UserProfileServiceInterface {
   Future<String> uploadProfilePicture(XFile imageFile, String uid) async {
     final storageref = storage
       .ref()
-      .child('profile_pictures')
-      .child('$uid.jpg'); // store as uid.jpg for easy retrieval
+      .child('profile_pictures/$uid/profile.jpg');  // stores profile image under a user-specific folder for secure access control
 
     if(kIsWeb){
       // Web: use bytes

@@ -53,13 +53,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final imageUrl = await widget.profileService.getProfileImageUrl(user.uid); 
 
-    setState(() async {
+    setState(() {
       _profileImage = pickedFile; 
       _profileImageUrl = imageUrl;
 
       // web support
       if (kIsWeb) {
-        _webImage = await pickedFile.readAsBytes();
+        pickedFile.readAsBytes().then((bytes) {
+          setState(() {
+            _webImage = bytes;
+          });
+        });
       } 
     });
 
@@ -204,7 +208,7 @@ Future<void> _deleteListing(String docId) async {
               children: [
                 // Profile header section (image + username + email)
                 ProfileHeader(
-                  profileImage: _profileImage == null ? null : File(_profileImage!.path),
+                  profileImage: kIsWeb ? null : (_profileImage != null ? File(_profileImage!.path) : null),
                   profileImageUrl: _profileImageUrl,
 
                   username: user.email?.split('@')[0] ?? 'User',

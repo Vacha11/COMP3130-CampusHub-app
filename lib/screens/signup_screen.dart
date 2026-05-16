@@ -77,130 +77,132 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return AuthLayout(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height:30),
-          const AuthHeader(),
-          const SizedBox(height: 20), 
-          // First + last name fields displayed side-by-side
-          Row(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppLabel(text: "First Name"),
-                    const SizedBox(height: 8),
-                    AppTextField(
-                      controller: _firstNameController,
-                      hint: "First",
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
+            const SizedBox(height:30),
+            const AuthHeader(),
+            const SizedBox(height: 20), 
+            // First + last name fields displayed side-by-side
+            Row(
+            children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppLabel(text: "Last Name"),
-                    const SizedBox(height: 8),
-                    AppTextField(
-                      controller: _lastNameController,
-                      hint: "Last",
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height:20),
-
-          // Email field
-          const AppLabel(text: "Email"),
-          const SizedBox(height: 8),
-          AppTextField(
-            controller: _emailController,
-            hint: "Enter Email",
-          ),
-
-          const SizedBox(height: 20),
-
-          // Password field
-          const AppLabel(text: "Password"),
-          const SizedBox(height: 8),
-          AppTextField(
-            controller: _passwordController,
-            hint: "Enter Password",
-            obscureText: true,
-          ),
-
-          const SizedBox(height:20),
-
-          // Signup button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton( // Sign-up button
-              onPressed: _isLoading ? null : _signup,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFA6192E), // red
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14), // button padding
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), 
-                ),
-              ),
-              child: _isLoading ? const CircularProgressIndicator(color: Colors.white) 
-              : const Text(
-                "Sign Up",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: "WorkSans",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-
-          Column(
-            children: [
-              Center(
-                // Navigation prompt for existing users
-                child: Text(
-                  "Already have an account?",
-                ),
-              ),
-            ],
-          ),
-          Center(
-            child: TextButton(
-              // Navigate to login screen if existing user
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginScreen(
-                      authService: _authService,
-                      profileService: widget.profileService,
-                    ),
+                    children: [
+                      const AppLabel(text: "First Name"),
+                      const SizedBox(height: 8),
+                      AppTextField(
+                        controller: _firstNameController,
+                        hint: "First",
+                      ),
+                    ],
                   ),
-                );
-              },
-              child: const Text(
-                "Log In",
-                style: TextStyle(
-                  color: Color(0xFFA6192E),
-                  fontWeight: FontWeight.bold,
+                ),
+
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppLabel(text: "Last Name"),
+                      const SizedBox(height: 8),
+                      AppTextField(
+                        controller: _lastNameController,
+                        hint: "Last",
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height:20),
+
+            // Email field
+            const AppLabel(text: "Email"),
+            const SizedBox(height: 8),
+            AppTextField(
+              controller: _emailController,
+              hint: "Enter Email",
+            ),
+
+            const SizedBox(height: 20),
+
+            // Password field
+            const AppLabel(text: "Password"),
+            const SizedBox(height: 8),
+            AppTextField(
+              controller: _passwordController,
+              hint: "Enter Password",
+              obscureText: true,
+            ),
+
+            const SizedBox(height:20),
+
+            // Signup button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton( // Sign-up button
+                onPressed: _isLoading ? null : _signup,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFA6192E), // red
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14), // button padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), 
+                  ),
+                ),
+                child: _isLoading ? const CircularProgressIndicator(color: Colors.white) 
+                : const Text(
+                  "Sign Up",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "WorkSans",
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+
+            Column(
+              children: [
+                Center(
+                  // Navigation prompt for existing users
+                  child: Text(
+                    "Already have an account?",
+                  ),
+                ),
+              ],
+            ),
+            Center(
+              child: TextButton(
+                // Navigate to login screen if existing user
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => LoginScreen(
+                        authService: _authService,
+                        profileService: widget.profileService,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Log In",
+                  style: TextStyle(
+                    color: Color(0xFFA6192E),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

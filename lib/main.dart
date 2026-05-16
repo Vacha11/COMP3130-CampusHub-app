@@ -18,7 +18,7 @@ void main() async {
       create: (_) => FavouriteProvider(
         favouriteService: FavouriteService(),
         auth: FirebaseAuth.instance,
-      ), // Provide the FavouriteProvider to the widget tree
+      ), 
       child:const MyApp()),
   );
 }
@@ -26,7 +26,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "WorkSans",
       ),
       debugShowCheckedModeBanner: false,
+      // initial screen to show
       home: SplashScreen(profileService: UserProfileService(
         firestore: FirebaseFirestore.instance,
         storage: FirebaseStorage.instance,

@@ -84,8 +84,10 @@ This architecture separates UI, logic, and data layers for maintainability.
 ### Test Login Details
 For testing purpose, following credentials can be used:
 
-- Email: testuser@email.com 
+- Email: alex.johnson@email.com 
 - Password: password123  
+
+New user account can also be created.
 
 ## Future Improvements
 - In-app chat feature

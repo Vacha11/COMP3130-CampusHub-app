@@ -108,6 +108,15 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
             pinned: true,
             backgroundColor: const Color(0xFFA6192E),
 
+            // custom back button
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              color: const Color(0xFFD6001C), // same vibe as heart
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+
             // heart icon to add to favourites
             actions: [
               IconButton(
@@ -128,8 +137,6 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                     tag: widget.docId,
                     child: buildSafeImage(widget.listing.imageUrl),
                   ),
-                
-                
               ),
             ),
           
