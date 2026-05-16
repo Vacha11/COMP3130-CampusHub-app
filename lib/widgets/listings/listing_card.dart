@@ -54,7 +54,7 @@ class ListingCard extends StatelessWidget {
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: AspectRatio(
-                          aspectRatio: 1,
+                          aspectRatio: 1.1,
                           child: Image.network(
                             imageUrl!,
                             fit: BoxFit.cover,
@@ -76,7 +76,7 @@ class ListingCard extends StatelessWidget {
           
             
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 6),
 
             //tile
             Text(
@@ -87,8 +87,6 @@ class ListingCard extends StatelessWidget {
                 color:  Color(0xFF373A36),
               ),
             ),
-
-            const SizedBox(height: 2),
 
             //price and favourite button
             Row(
