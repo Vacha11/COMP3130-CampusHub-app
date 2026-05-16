@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:campushub/services/listing_service.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
-import 'package:campushub/services/listing_service_interface.dart';
+import 'package:campushub/services/interfaces/listing_service_interface.dart';
 import 'dart:typed_data';
 
 // Screen where users can create a new marketplace listing
@@ -45,6 +45,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
 
   // store the selected image first 
   XFile? selectedImage;
+  // Stores image bytes for displaying preview on Flutter Web
   Uint8List? selectedImageBytes;
   
   final ImagePicker picker = ImagePicker();
@@ -121,6 +122,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
   void _submitListing() async {
     final category = selectedCategory == 0 ? "Item" : "Service";
 
+    // Validate required fields
     if (titleController.text.isEmpty ||
       descriptionController.text.isEmpty ||
       priceController.text.isEmpty ||
@@ -131,6 +133,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       return;
     }
 
+    // Ensure an image is selected
     if (selectedImage == null && widget.imageUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please select an image")),
@@ -145,6 +148,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       widget.imageUrl,
     );
 
+    // Save listing to Firestore
     await _listingService.submitListing(
       docId: widget.docId,
       title: titleController.text,
@@ -156,10 +160,11 @@ class _AddListingScreenState extends State<AddListingScreen> {
     );
     // return to the previous screen aftr submitting
     if (mounted) {
-      Navigator.pop(context); // go back after saving
+      Navigator.pop(context); 
     }
   }
   
+  // Allow user to pick image from camera or gallery
   Future<void> selectImage(ImageSource source) async{
     final selectedFile = await picker.pickImage(source: source);
 
@@ -172,6 +177,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       selectedImageBytes = bytes;
     });
 
+    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -185,6 +191,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
     );
   }
 
+  // Bottom sheet for choosing image source
   void _showImagePickerOptions() {
   showModalBottomSheet(
     context: context,
@@ -195,6 +202,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
       return SafeArea(
         child: Wrap(
           children: [
+            // Gallery option
             ListTile(
               leading: const Icon(Icons.photo_library),
               title: const Text('Choose from Gallery'),
@@ -203,6 +211,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                 selectImage(ImageSource.gallery);
               },
             ),
+            // Camera option
             ListTile(
               leading: const Icon(Icons.camera_alt),
               title: const Text('Take a Photo'),
@@ -229,7 +238,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color:Color(0xFF373A36)),
           onPressed: (){
-            Navigator.pop(context); // go back to previous screen
+            Navigator.pop(context); 
           },
         ),
       ),

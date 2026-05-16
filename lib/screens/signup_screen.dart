@@ -7,7 +7,7 @@ import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/widgets/auth/auth_header.dart';
 import 'package:campushub/services/firestore_service.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 // Screen for creating a new CampusHub account
 class SignupScreen extends StatefulWidget {
@@ -69,7 +69,7 @@ void initState() {
     } else {
       // Show error message if signup fails
       ScaffoldMessenger.of(context).showSnackBar( 
-        const SnackBar(content: Text('Sign up failed. Please try again.')), // Show error message if sign-up fails
+        const SnackBar(content: Text('Sign up failed. Please try again.')), 
       );
     }
   }

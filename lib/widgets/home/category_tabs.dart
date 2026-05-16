@@ -31,7 +31,7 @@ class CategoryTabSelector extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: isSelected ? Colors.red : Colors.black, // Change text color based on selectio
+              color: isSelected ? const Color(0xFFA6192E) : const Color(0xFF373A36), // Change text color based on selectio
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Change font weight based on selection
             ),
           ),
@@ -39,7 +39,7 @@ class CategoryTabSelector extends StatelessWidget {
           Container(
             height: 2,
             width: 20,
-            color: isSelected ? Colors.red : Colors.transparent, // Show underline if selected, otherwise
+            color: isSelected ? const Color(0xFFA6192E) : Colors.transparent, // Show underline if selected, otherwise
           ),
         ],
       ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:campushub/screens/addlisting_screen.dart';
-import 'package:campushub/services/listing_service_interface.dart';
+import 'package:campushub/services/interfaces/listing_service_interface.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:typed_data';
 
-/// Fake service to avoid real Firebase calls during testing
+// Fake service to avoid real Firebase calls during testing
 class FakeListingService implements ListingServiceInterface {
   bool submitCalled = false;
 

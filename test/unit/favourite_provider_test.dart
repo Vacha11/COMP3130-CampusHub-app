@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:campushub/providers/favourite_provider.dart';
-import 'package:campushub/services/favourite_service_interface.dart';
+import 'package:campushub/services/interfaces/favourite_service_interface.dart';
 
-/// Fake service to avoid real Firestore usage in tests
+// Fake service to avoid real Firestore usage in tests
 class FakeFavouriteService implements FavouriteServiceInterface {
 
   List<String> fakeFavourites = [];

@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
+// display user's profile picture, username, and email
 class ProfileHeader extends StatelessWidget {
-  final File? profileImage;
-  final String? profileImageUrl;
+  final File? profileImage; // Local image picked from device (camera/gallery)
+  final String? profileImageUrl; // Image URL stored in Firebase (cloud profile image)
   final String username;
   final String email;
   final VoidCallback onEditPhoto;
@@ -38,6 +39,7 @@ class ProfileHeader extends StatelessWidget {
                         ? NetworkImage(profileImageUrl!)
                         : null) as ImageProvider?,
 
+                // Show default icon when no image exists
                 child: profileImage == null && profileImageUrl == null
                     ? const Icon(
                         Icons.person,

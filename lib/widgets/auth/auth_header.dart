@@ -6,6 +6,7 @@ class AuthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      // App logo icon
       children: [
         Image.asset(
           "assets/images/lighthouse.png",
@@ -15,9 +16,11 @@ class AuthHeader extends StatelessWidget {
 
         const SizedBox(width: 10),
 
+        // App name and tagline
         const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // App title
             Text(
               "CampusHub",
               style: TextStyle(
@@ -27,6 +30,7 @@ class AuthHeader extends StatelessWidget {
                 fontFamily: "WorkSans",
               ),
             ),
+            //tagline
             Text(
               "Buy, Sell, Connect on Campus",
               style: TextStyle(

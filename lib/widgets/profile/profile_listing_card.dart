@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// display their own listings in profile page with edit and delete actions
 class ProfileListingCard extends StatelessWidget {
   final String title;
   final String price;
@@ -25,6 +26,7 @@ class ProfileListingCard extends StatelessWidget {
         "\$$price${category.toLowerCase() == 'service' ? '/hr' : ''}";
 
     return Container(
+      // Ensure card has minimum height for consistent layout
       constraints: const BoxConstraints(
         minHeight: 120,
       ),
@@ -34,7 +36,7 @@ class ProfileListingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-
+        // Light border for separation between cards
         border: Border.all(
           color: const Color(0xFFEDEBE5),
           width: 1,
@@ -60,7 +62,7 @@ class ProfileListingCard extends StatelessWidget {
               color: Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
-
+            // Show image if available, otherwise fallback icon
             child: imageUrl != null && imageUrl!.isNotEmpty
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(10),

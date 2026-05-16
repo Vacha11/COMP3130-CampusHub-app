@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Ensure consistent styling for field labels like "Title", "Price", etc.
 class AppLabel extends StatelessWidget {
   final String text;
 

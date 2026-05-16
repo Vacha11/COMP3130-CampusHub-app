@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Provide consistent background styling and bottom branding gradient
 class AuthLayout extends StatelessWidget {
   final Widget child;
 

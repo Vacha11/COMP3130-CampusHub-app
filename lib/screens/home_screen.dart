@@ -1,11 +1,11 @@
-import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'addlisting_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 import 'package:campushub/widgets/home/home_content.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
-import 'package:campushub/services/auth_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/auth_service_interface.dart';
 
 class HomeScreen extends StatefulWidget {
   final FirestoreServiceInterface firestoreService;
@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
 
-      // // Bottom navigation bar controlling main app sections
+      // Bottom navigation bar controlling main app sections
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

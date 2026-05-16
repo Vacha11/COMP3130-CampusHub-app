@@ -1,6 +1,6 @@
 import 'package:campushub/screens/addlisting_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:campushub/services/auth_service_interface.dart';
+import 'package:campushub/services/interfaces/auth_service_interface.dart';
 import 'login_screen.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -9,8 +9,8 @@ import 'package:campushub/widgets/profile/profile_listing_card.dart';
 import 'package:campushub/widgets/common/confirmation_dialog.dart';
 import 'package:campushub/widgets/profile/profile_header.dart';
 import 'package:campushub/models/listing_model.dart';
-import 'package:campushub/services/firestore_service_interface.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 
 

@@ -1,19 +1,21 @@
-import 'package:campushub/services/firestore_service_interface.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/screens/favourites_screen.dart';
 import 'package:campushub/screens/profile_screen.dart';
 import 'package:campushub/widgets/home/search_bar.dart';
 import 'package:campushub/widgets/home/category_tabs.dart';
 import 'package:campushub/widgets/listings/listing_view.dart';
-import 'package:campushub/services/auth_service_interface.dart';
+import 'package:campushub/services/interfaces/auth_service_interface.dart';
 
+// acts as the main point for the Home screen UI and switches between Home, Favourites, and Profile views based on bottom navigation.
 class HomeContent extends StatelessWidget {
-  final int bottomIndex;
-  final int categoryIndex;
-  final String searchQuery;
+  final int bottomIndex; // Bottom navigation index (0 = Home, 1 = Favourites, 2 = Profile)
+  final int categoryIndex; // Selected category tab index (All / Items / Services)
+  final String searchQuery; // Current search input from user
   final Function(int) onCategoryChanged;
   final Function(String) onSearchChanged;
+  // Service dependencies for data access
   final FirestoreServiceInterface firestoreService;
   final AuthServiceInterface authService;
   final UserProfileServiceInterface profileService;

@@ -1,4 +1,4 @@
-import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
 import 'package:campushub/models/listing_model.dart';
 
 class FakeFirestoreService implements FirestoreServiceInterface {

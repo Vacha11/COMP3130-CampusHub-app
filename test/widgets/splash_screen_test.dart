@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:campushub/screens/splash_screen.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 class FakeProfileService implements UserProfileServiceInterface {
   @override

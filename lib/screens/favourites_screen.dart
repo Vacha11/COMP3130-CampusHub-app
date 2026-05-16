@@ -1,4 +1,4 @@
-import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
@@ -19,9 +19,11 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Access favourite provider state
     final favouriteProvider = Provider.of<FavouriteProvider>(context);
     final favouriteIds = favouriteProvider.favouriteIds; // Get the list of favourite listing IDs
 
+    // Display message if no favourites exist
     if (favouriteIds.isEmpty) {
       return const Center(
         child: Text(
@@ -31,9 +33,11 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
       );
     }
 
+    // StreamBuilder listens for real-time listing updates from Firestore
     return StreamBuilder<List<ListingModel>>(
       stream: widget.firestoreService.getListings(),
       builder: (context, snapshot) {
+        // Show loading spinner while data loads
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:campushub/providers/favourite_provider.dart';
 
 class ListingCard extends StatelessWidget {
+  // Listing details passed from Firestore model
   final String title;
   final String price;
   final String? category;
@@ -22,11 +23,13 @@ class ListingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine if listing is a service (adds /hr pricing format)
     final isService = (category ?? '').toLowerCase() == 'service';
     final formattedPrice = "\$$price${isService ? '/hr' : ''}";
 
     return GestureDetector(
       onTap: onTap,
+      // Card container styling for marketplace look
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(12),
@@ -47,7 +50,7 @@ class ListingCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            //image
+            //image with hero animation for smooth transition
             Hero(
               tag: docId ?? title,
                 child: (imageUrl != null && imageUrl!.isNotEmpty)
@@ -73,8 +76,6 @@ class ListingCard extends StatelessWidget {
                     )
                     : const Icon(Icons.image, size: 50, color: Color(0xFF373A36)),
             ),
-          
-            
 
             const SizedBox(height: 6),
 
@@ -101,6 +102,7 @@ class ListingCard extends StatelessWidget {
                   ),
                 ),
 
+                // Favourite toggle button (uses Provider state)
                 Builder(
                   builder: (context) {
                     final favouriteProvider = Provider.of<FavouriteProvider>(context);

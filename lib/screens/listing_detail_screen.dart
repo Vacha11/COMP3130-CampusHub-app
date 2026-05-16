@@ -18,7 +18,8 @@ class ListingDetailScreen extends StatefulWidget {
 }
 
 class _ListingDetailScreenState extends State<ListingDetailScreen> {
-
+  
+  // If issue loading image, load broken image icon instead of crashing page
   Widget buildSafeImage(String? url) {
     if (url == null || url.isEmpty) {
       return Container(
@@ -200,6 +201,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
                   const SizedBox(height: 25),
 
+                  // description
                   _sectionCard(
                     title: "Description",
                     child: Text(
@@ -210,6 +212,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
                   const SizedBox(height: 20),
 
+                  // Seller name
                   _sectionCard(
                     title: "Seller",
                     child: Row(
@@ -235,6 +238,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
 
                   const SizedBox(height: 20),
                   
+                  // contact number
                   _sectionCard(
                     title: "Contact",
                     child: Text(

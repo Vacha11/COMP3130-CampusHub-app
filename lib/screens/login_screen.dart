@@ -1,12 +1,12 @@
 import 'package:campushub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:campushub/services/auth_service_interface.dart';
+import 'package:campushub/services/interfaces/auth_service_interface.dart';
 import 'package:campushub/widgets/common/app_text_fields.dart';
 import 'package:campushub/widgets/common/app_label.dart';
 import 'package:campushub/widgets/auth/auth_layout.dart';
 import 'package:campushub/widgets/auth/auth_header.dart';
 import 'package:campushub/services/firestore_service.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthServiceInterface authService;
@@ -47,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    
     // Attempt sign in through the authentication service
     final user = await _authService.signIn(email, password);
 

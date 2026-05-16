@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:campushub/services/favourite_service_interface.dart';
+import 'package:campushub/services/interfaces/favourite_service_interface.dart';
 
 class FavouriteProvider extends ChangeNotifier {
   final FavouriteServiceInterface favouriteService;

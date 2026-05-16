@@ -4,7 +4,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:campushub/screens/profile_screen.dart';
 import 'package:campushub/services/auth_service.dart';
 import 'package:campushub/models/listing_model.dart';
-import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
 import '../fakes/fake_profile_service.dart';
 
 // fake firestore

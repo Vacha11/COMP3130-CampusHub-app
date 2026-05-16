@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:campushub/services/firestore_service_interface.dart';
+import 'package:campushub/services/interfaces/firestore_service_interface.dart';
 import 'package:campushub/widgets/listings/listing_card.dart';
 import 'package:campushub/screens/listing_detail_screen.dart';
 import 'package:campushub/models/listing_model.dart';
-import 'package:campushub/services/auth_service_interface.dart';
+import 'package:campushub/services/interfaces/auth_service_interface.dart';
 
+// ListingsView is responsible for fetching, filtering, and displaying all marketplace listings.
 class ListingsView extends StatefulWidget {
   final int categoryIndex;
   final String searchQuery;
   final FirestoreServiceInterface firestoreService;
   final AuthServiceInterface authService;
 
-  ListingsView({
+  const ListingsView({
     super.key,
     required this.categoryIndex,
     required this.searchQuery,
@@ -63,16 +64,17 @@ class _ListingsViewState extends State<ListingsView> {
 
           return matchesCategory && matchesSearch;
         }).toList();
-
+        // If no results after filtering
         if (listings.isEmpty) {
           return const Center(child: Text("No listings in this category"));
         }
 
+        // Grid-based layout
         return GridView.builder(
           padding: const EdgeInsets.all(12),
           itemCount: listings.length,
           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 250,
+            maxCrossAxisExtent: 250, // responsive column width
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
             childAspectRatio: 0.6,

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campushub/services/firestore_service.dart';
-import 'listing_service_interface.dart';
+import 'interfaces/listing_service_interface.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,15 +20,16 @@ class ListingService implements ListingServiceInterface {
       return existingUrl;
     }
 
+    // Create a unique storage reference for each upload
     final ref = FirebaseStorage.instance
       .ref()
       .child('listing_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
-    
+    // If running on web (bytes available), upload directly from memory
     if (imageBytes != null) {
       await ref.putData(imageBytes);
       return await ref.getDownloadURL();
     }
-
+    // // Otherwise for mobile, read file bytes and upload
     final bytes = await imageFile!.readAsBytes();
     await ref.putData(bytes);
     return await ref.getDownloadURL();

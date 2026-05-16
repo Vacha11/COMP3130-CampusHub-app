@@ -1,4 +1,4 @@
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 class FakeProfileService implements UserProfileServiceInterface {
   @override

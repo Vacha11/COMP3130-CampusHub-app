@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
 import 'package:campushub/services/auth_service.dart';
-import 'package:campushub/services/user_profile_service_interface.dart';
+import 'package:campushub/services/interfaces/user_profile_service_interface.dart';
 
 class SplashScreen extends StatelessWidget {
   final UserProfileServiceInterface profileService;

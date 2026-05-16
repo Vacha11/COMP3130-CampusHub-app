@@ -1,4 +1,4 @@
-import 'package:campushub/services/favourite_service_interface.dart';
+import 'package:campushub/services/interfaces/favourite_service_interface.dart';
 
 class FakeFavouriteService implements FavouriteServiceInterface {
   final List<String> _favs = [];

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:campushub/models/listing_model.dart';
-import 'firestore_service_interface.dart';
+import 'interfaces/firestore_service_interface.dart';
 import 'dart:typed_data';
 
 class FirestoreService implements FirestoreServiceInterface {
@@ -107,6 +107,7 @@ class FirestoreService implements FirestoreServiceInterface {
       });
   }
 
+  // get listing by search 
   Stream<List<ListingModel>> searchListings(String query){
     return db
       .collection('listings')
