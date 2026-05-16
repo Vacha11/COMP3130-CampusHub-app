@@ -73,11 +73,11 @@ CampusHub is designed specifically for university students as the primary user g
 
 ## Technical Details
 ### Project Structure
-- '/screens': this folder consists of codes for all screens (UI pages)
-- '/services': this folder holds firebase logic (Firestore and Storage)
-- '/models': This folder has data models (listing model specifically)
-- '/providers': handles statement management for favourites
-- '/widgets': Reusable UI components
+- `/screens`: this folder consists of codes for all screens (UI pages)
+- `/services`: this folder holds firebase logic (Firestore and Storage)
+- `/models`: This folder has data models (listing model specifically)
+- `/providers`: handles statement management for favourites
+- `/widgets`: Reusable UI components
 
 This architecture separates UI, logic, and data layers for maintainability.
 
@@ -88,6 +88,23 @@ For testing purpose, following credentials can be used:
 - Password: password123  
 
 New user account can also be created.
+
+## Device / Platform Compatibility Notes
+
+### Platform Testing
+The application was developed and primarily tested on an **iOS Simulator (MacBook environment)**.
+
+Due to development environment constraints (no Android Studio setup), full Android emulator testing was not completed. However, the application is built using Flutter’s cross-platform framework, ensuring compatibility across both iOS and Android devices.
+
+### Image Handling (Web vs Mobile)
+Image selection and handling differ between web and mobile platforms. On mobile devices, images are handled using file-based access (`dart:io File`). On web, images are handled in-memory using `Uint8List` due to browser restrictions on file system access.
+
+### Firebase Authentication Dependency
+Firebase Storage operations require the user to be authenticated. If the authentication state is not fully initialized (particularly on web after refresh), upload operations may fail with an unauthorized error.
+
+### Platform Permissions
+- Android requires runtime permissions for camera and storage access.
+- iOS requires configuration in `Info.plist` for camera and photo library access.
 
 ## Future Improvements
 - In-app chat feature
